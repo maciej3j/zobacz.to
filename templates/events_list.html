@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Wydarzenia studenckie{% endblock %}
+
+{% block content %}
+<h2>Wszystkie wydarzenia</h2>
+<ul>
+  {% for event in events %}
+    <li>
+      <strong>{{ event.title }}</strong><br>
+      {{ event.date }}<br>
+      {{ event.location }}<br>
+      {{ event.description }}
+    </li>
+  {% empty %}
+    <li>Brak wydarzeń.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
