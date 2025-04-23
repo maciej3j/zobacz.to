@@ -1,0 +1,29 @@
+Dla użytkownika typu Student:
+    Rejestracja i logowanie do systemu (w tym uwierzytelnianie za pomocą kont uczelnianych)
+    Przeglądanie listy nadchodzących wydarzeń z możliwością sortowania i filtrowania
+    Wyszukiwanie wydarzeń według kategorii, lokalizacji, daty, organizatora, tagów (#)
+    Zapisywanie się na wybrane wydarzenia
+    Otrzymywanie powiadomień o nadchodzących wydarzeniach
+    Dodawanie wydarzeń do kalendarza
+    Ocenianie i komentowanie przeszłych wydarzeń
+    Tworzenie profilu z preferencjami tematycznymi
+    Śledzenie ulubionych organizatorów wydarzeń
+    Udostępnianie informacji o wydarzeniach w mediach społecznościowych
+    Dla użytkownika typu Organizator:
+    Tworzenie i edycja wydarzeń
+    Dodawanie szczegółowych informacji o wydarzeniu (czas, miejsce, opis, grafiki, limit uczestników)
+    Zarządzanie rejestracją uczestników
+    Publikowanie ogłoszeń związanych z organizowanymi wydarzeniami
+    Przeglądanie statystyk dotyczących zainteresowania wydarzeniem
+    Komunikacja z zarejestrowanymi uczestnikami
+    Przeglądanie ocen i opinii dotyczących zorganizowanych wydarzeń
+    Generowanie raportów po wydarzeniu
+    Dla użytkownika typu Administrator:
+    Zarządzanie kontami użytkowników (tworzenie, modyfikacja, blokowanie)
+    Weryfikacja i akceptacja wydarzeń przed publikacją
+    Moderowanie treści (komentarze, oceny)
+    Zarządzanie kategoriami i tagami wydarzeń
+    Publikowanie ogłoszeń systemowych
+    Monitorowanie aktywności w systemie
+    Generowanie raportów i statystyk użytkowania
+    Zarządzanie ustawieniami systemu
