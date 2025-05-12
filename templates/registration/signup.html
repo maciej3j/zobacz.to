@@ -1,3 +1,60 @@
 {% extends "base.html" %}
+{% load static %}
+{% block title %}Zarejestruj się{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+<div class="login-container">
+    <div class="login-card">
+      <div class="logo-image">
+        <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
+      </div>
+        <h2 class="login-title">Witamy na platformie Zapiszto!</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
 
-{% block title %}{% endblock title %}
+            {% if form.non_field_errors %}
+            <ul class="errorlist">
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+
+            <div class="form-group">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {{ form.password1.errors }}
+            </div>
+
+            <div class="form-group">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                {{ form.password2.errors }}
+            </div>
+
+            <button type="submit" class="login-button">Zarejestruj się</button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}
