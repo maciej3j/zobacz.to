@@ -3,14 +3,35 @@
 {% block title %}Wydarzenia studenckie{% endblock %}
 
 {% block content %}
+<form method="get">
+  <label for="location">Lokalizacja:</label>
+  <input type="text" name="location" value="{{ request.GET.location }}">
+
+  <label for="sort">Sortuj:</label>
+  <select name="sort">
+    <option value="date" {% if request.GET.sort == "date" %}selected{% endif %}>Data rosnąco</option>
+    <option value="date_desc" {% if request.GET.sort == "date_desc" %}selected{% endif %}>Data malejąco</option>
+    <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Tytuł</option>
+  </select>
+
+  <button type="submit">Filtruj</button>
+</form>
+
+<p>Sortuj według: 
+  <a href="?sort=date">Data rosnąco</a> | 
+  <a href="?sort=date_desc">Data malejąco</a> | 
+  <a href="?sort=title">Tytuł</a>
+</p>
+
+
 <h2>Wszystkie wydarzenia</h2>
 <ul>
   {% for event in events %}
     <li>
       <strong>{{ event.title }}</strong><br>
-      {{ event.date }}<br>
-      {{ event.location }}<br>
-      {{ event.description }}
+      Kiedy: {{ event.date }}<br>
+      Gdzie: {{ event.location }}<br>
+      Opis wydarzenia:<br>{{ event.description }}
     </li>
   {% empty %}
     <li>Brak wydarzeń.</li>
