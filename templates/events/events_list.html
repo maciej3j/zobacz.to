@@ -1,40 +1,55 @@
+<!-- filepath: c:\Users\vlome\OneDrive\Dokumenty\InzynieriaOprog\zapiszto\templates\events\events_list.html -->
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Wydarzenia studenckie{% endblock %}
+{% block title %}Wydarzenia{% endblock %}
 
 {% block content %}
-<form method="get">
-  <label for="location">Lokalizacja:</label>
-  <input type="text" name="location" value="{{ request.GET.location }}">
-
-  <label for="sort">Sortuj:</label>
-  <select name="sort">
-    <option value="date" {% if request.GET.sort == "date" %}selected{% endif %}>Data rosnąco</option>
-    <option value="date_desc" {% if request.GET.sort == "date_desc" %}selected{% endif %}>Data malejąco</option>
-    <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Tytuł</option>
-  </select>
-
-  <button type="submit">Filtruj</button>
-</form>
-
-<p>Sortuj według: 
-  <a href="?sort=date">Data rosnąco</a> | 
-  <a href="?sort=date_desc">Data malejąco</a> | 
-  <a href="?sort=title">Tytuł</a>
-</p>
-
-
-<h2>Wszystkie wydarzenia</h2>
-<ul>
-  {% for event in events %}
-    <li>
-      <strong>{{ event.title }}</strong><br>
-      Kiedy: {{ event.date }}<br>
-      Gdzie: {{ event.location }}<br>
-      Opis wydarzenia:<br>{{ event.description }}
-    </li>
-  {% empty %}
-    <li>Brak wydarzeń.</li>
-  {% endfor %}
-</ul>
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<div class="events-layout">
+  <nav class="sidebar sidebar-left">
+    <ul>
+      <li><a href="{% url 'home' %}">Strona główna</a></li>
+      <li><a href="{% url 'events_list' %}">Lista wydarzeń</a></li>
+      <li><a href="{% url 'add_event' %}">Dodaj wydarzenie</a></li>
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'logout' %}">Wyloguj się</a></li>
+      {% else %}
+        <li><a href="{% url 'login' %}">Zaloguj się</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  <div class="main-content">
+    <header class="topbar">
+      <div class="logo-image">
+        <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
+      </div>
+      <span class="topbar-title">Lista wydarzeń</span>
+    </header>
+    <div class="events-card">
+      <form method="get" style="text-align:right; margin-bottom: 24px; display: flex; justify-content: flex-end; align-items: center; gap: 12px;">
+        <label for="sort" style="font-weight:600; color: var(--medium-purple); font-size: 24px">Sortuj:</label>
+        <select name="sort" id="sort" style="padding: 10px 16px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
+          <option value="date" {% if request.GET.sort == "date" %}selected{% endif %}>Rosnąco (data)</option>
+          <option value="date_desc" {% if request.GET.sort == "date_desc" %}selected{% endif %}>Malejąco (data)</option>
+          <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Alfabetycznie</option>
+        </select>
+        <button type="submit" class="login-button" style="width:auto;display:inline-block;padding:10px 18px;">Filtruj</button>
+      </form>
+      <ul class="events-list">
+        {% for event in events %}
+          <li>
+            <span class="event-title">{{ event.title }}</span><br>
+            <span class="event-meta"><b>Kiedy:</b> {{ event.date|date:"Y-m-d H:i" }}</span><br>
+            <span class="event-meta"><b>Gdzie:</b> {{ event.location }}</span><br>
+            <div class="event-description">{{ event.description }}</div>
+          </li>
+        {% empty %}
+          <li>Brak wydarzeń.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <nav class="sidebar sidebar-right"></nav>
+</div>
 {% endblock %}

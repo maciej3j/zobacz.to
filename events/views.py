@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView
 from .models import Event
 from .forms import EventForm
@@ -35,7 +35,12 @@ def add_event(request):
         form = EventForm()
     return render(request, 'events/add_event.html', {'form': form})
 
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    if request.method == "POST":
+        event.delete()
+    return redirect('events_list')
 
 def home(request):
     events = Event.objects.all()
-    return render(request, 'events/home.html', {'events': events})
+    return render(request, 'home.html', {'events': events})

@@ -6,5 +6,5 @@ class EventForm(forms.ModelForm):
         model = Event
         fields = ['title', 'description', 'date', 'location']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
+            'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
