@@ -72,3 +72,20 @@
     text-align: center;
     color: #888;
 }
+
+/*przycisk BUTTON przekierowujący do strony z dodawaniem wydarzeń*/
+.add-event-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.add-event-button:hover {
+    background-color: #218838;
+}

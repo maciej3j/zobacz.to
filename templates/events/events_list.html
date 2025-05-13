@@ -34,6 +34,7 @@
             <a href="?sort=date_desc">Data malejąco</a> | 
             <a href="?sort=title">Tytuł</a>
         </div>
+        <a href="{% url 'add_event' %}" class="add-event-button">+ Dodaj wydarzenie</a>
 
         <ul class="event-list">
             {% for event in events %}
