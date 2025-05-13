@@ -17,19 +17,8 @@
       <a href="{% url 'login' %}" class="create-account">Zaloguj się</a>
     {% endif %}
 
-    <div class="divider">Wydarzenia studenckie</div>
-    <ul>
-      {% for event in events %}
-        <li style="margin-bottom: 20px;">
-          <strong>{{ event.title }}</strong><br>
-          {{ event.date }}<br>
-          {{ event.location }}<br>
-          {{ event.description }}
-        </li>
-      {% empty %}
-        <li>Brak wydarzeń.</li>
-      {% endfor %}
-    </ul>
+    <div class="divider"><a href="{% url 'events_list' %}">Wszystkie wydarzenia studenckie</a></div>
+
   </div>
 </div>
 {% endblock %}

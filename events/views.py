@@ -38,4 +38,4 @@ def add_event(request):
 
 def home(request):
     events = Event.objects.all()
-    return render(request, 'events/home.html', {'events': events})
+    return render(request, 'home.html', {'events': events})
