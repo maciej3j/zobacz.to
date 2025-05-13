@@ -1,40 +1,53 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Wydarzenia studenckie{% endblock %}
 
 {% block content %}
-<form method="get">
-  <label for="location">Lokalizacja:</label>
-  <input type="text" name="location" value="{{ request.GET.location }}">
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
 
-  <label for="sort">Sortuj:</label>
-  <select name="sort">
-    <option value="date" {% if request.GET.sort == "date" %}selected{% endif %}>Data rosnąco</option>
-    <option value="date_desc" {% if request.GET.sort == "date_desc" %}selected{% endif %}>Data malejąco</option>
-    <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Tytuł</option>
-  </select>
+<div class="events-container">
+    <div class="events-card">
+        <h2 class="events-title">Wszystkie wydarzenia</h2>
 
-  <button type="submit">Filtruj</button>
-</form>
+        <form method="get" class="filter-form">
+            <div class="form-group">
+                <label for="location">Lokalizacja:</label>
+                <input type="text" name="location" value="{{ request.GET.location }}" placeholder="np. Warszawa">
+            </div>
 
-<p>Sortuj według: 
-  <a href="?sort=date">Data rosnąco</a> | 
-  <a href="?sort=date_desc">Data malejąco</a> | 
-  <a href="?sort=title">Tytuł</a>
-</p>
+            <div class="form-group">
+                <label for="sort">Sortuj:</label>
+                <select name="sort">
+                    <option value="date" {% if request.GET.sort == "date" %}selected{% endif %}>Data rosnąco</option>
+                    <option value="date_desc" {% if request.GET.sort == "date_desc" %}selected{% endif %}>Data malejąco</option>
+                    <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Tytuł</option>
+                </select>
+            </div>
 
+            <button type="submit" class="filter-button">Filtruj</button>
+        </form>
 
-<h2>Wszystkie wydarzenia</h2>
-<ul>
-  {% for event in events %}
-    <li>
-      <strong>{{ event.title }}</strong><br>
-      Kiedy: {{ event.date }}<br>
-      Gdzie: {{ event.location }}<br>
-      Opis wydarzenia:<br>{{ event.description }}
-    </li>
-  {% empty %}
-    <li>Brak wydarzeń.</li>
-  {% endfor %}
-</ul>
+        <div class="sort-links">
+            Sortuj według: 
+            <a href="?sort=date">Data rosnąco</a> | 
+            <a href="?sort=date_desc">Data malejąco</a> | 
+            <a href="?sort=title">Tytuł</a>
+        </div>
+
+        <ul class="event-list">
+            {% for event in events %}
+                <li class="event-item">
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    <p><strong>Kiedy:</strong> {{ event.date }}</p>
+                    <p><strong>Gdzie:</strong> {{ event.location }}</p>
+                    <p><strong>Opis:</strong> {{ event.description }}</p>
+                </li>
+                <hr>
+            {% empty %}
+                <li class="event-empty">Brak wydarzeń.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}
