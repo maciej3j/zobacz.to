@@ -1,4 +1,6 @@
 # Zapiszto!
+Projekt na przedmiot "inżynieria oprogramowania". Jest to strona internetowa w której studenci mogą przeglądać i dodawać ogłoszenia, rejestrować się na nie, otrzymywać powiadomienia o nowych czy zbliżających się wydarzeniach itd.
+
 Jak uruchomić projekt?
 1. Sklonuj repozytorium:
 ```
