@@ -19,3 +19,8 @@ def add_event(request):
     else:
         form = EventForm()
     return render(request, 'add_event.html', {'form': form})
+
+
+def home(request):
+    events = Event.objects.all()
+    return render(request, 'home.html', {'events': events})
