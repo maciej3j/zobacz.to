@@ -3,6 +3,7 @@ from django.views.generic import ListView
 from .models import Event
 from .forms import EventForm
 from django.utils.timezone import now
+from .decorators import organizer_required
 
 class EventListView(ListView):
     model = Event
@@ -24,7 +25,7 @@ class EventListView(ListView):
 
         return queryset
 
-
+@organizer_required
 def add_event(request):
     if request.method == 'POST':
         form = EventForm(request.POST)

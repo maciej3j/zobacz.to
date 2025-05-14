@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Prośby o zostanie organizatorem{% endblock %}
+{% block content %}
+<h2>Prośby o zostanie organizatorem</h2>
+<ul>
+    {% for req in requests %}
+        <li>
+            <strong>Użytkownik:</strong> {{ req.user.username }}<br>
+            <strong>Email:</strong> {{ req.user.email }}<br>
+            <strong>Data rejestracji:</strong> {{ req.user.date_joined }}<br>
+            <strong>Imię:</strong> {{ req.user.first_name }}<br>
+            <strong>Nazwisko:</strong> {{ req.user.last_name }}<br>
+            <form method="post" action="{% url 'approve_organizer_request' req.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Zatwierdź</button>
+            </form>
+            <form method="post" action="{% url 'reject_organizer_request' req.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Odrzuć</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>Brak oczekujących próśb.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

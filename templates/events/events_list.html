@@ -34,8 +34,13 @@
             <a href="?sort=date_desc">Data malejąco</a> | 
             <a href="?sort=title">Tytuł</a>
         </div>
-        <a href="{% url 'add_event' %}" class="add-event-button">+ Dodaj wydarzenie</a>
-
+        {% if user.is_authenticated %}
+            {% for group in user.groups.all %}
+                {% if group.name == "organizer" %}
+                    <a href="{% url 'add_event' %}" class="add-event-button">+ Dodaj wydarzenie</a>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
         <ul class="event-list">
             {% for event in events %}
                 <li class="event-item">
