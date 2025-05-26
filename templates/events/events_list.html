@@ -48,8 +48,27 @@
                     <p><strong>Kiedy:</strong> {{ event.date }}</p>
                     <p><strong>Gdzie:</strong> {{ event.location }}</p>
                     <p><strong>Opis:</strong> {{ event.description }}</p>
+                    {% if user.is_authenticated %}
+                        {% for group in user.groups.all %}
+                            {% if group.name == "student" %}
+                                <form method="post" action="{% url 'enroll_in_event' event.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="enroll-button">Zapisz się</button>
+                            </form>
+                            {% if messages %}
+                            <div class="messages">
+                            {% for message in messages %}
+                            <div class="message {{ message.tags }}">{{ message }}</div>
+                             {% endfor %}
+                            </div>
+                            {% endif %} 
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                
                 </li>
                 <hr>
+    
             {% empty %}
                 <li class="event-empty">Brak wydarzeń.</li>
             {% endfor %}
