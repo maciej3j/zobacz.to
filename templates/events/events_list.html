@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Wydarzenia studenckie{% endblock %}
+{% block title %}Wydarzenia studenckie{% endblock title %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
@@ -28,12 +28,16 @@
             <button type="submit" class="filter-button">Filtruj</button>
         </form>
 
-        <div class="sort-links">
-            Sortuj według: 
-            <a href="?sort=date">Data rosnąco</a> | 
-            <a href="?sort=date_desc">Data malejąco</a> | 
-            <a href="?sort=title">Tytuł</a>
-        </div>
+        {% with request.GET.location as loc %}
+            <div class="sort-links">
+                Sortuj według: 
+                <a href="?sort=date{% if loc %}&location={{ loc }}{% endif %}">Data rosnąco</a> | 
+                <a href="?sort=date_desc{% if loc %}&location={{ loc }}{% endif %}">Data malejąco</a> | 
+                <a href="?sort=title{% if loc %}&location={{ loc }}{% endif %}">Tytuł</a>
+            </div>
+        {% endwith %}
+
+
         {% if user.is_authenticated %}
             {% for group in user.groups.all %}
                 {% if group.name == "organizer" %}
@@ -56,4 +60,4 @@
         </ul>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
