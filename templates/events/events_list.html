@@ -15,16 +15,6 @@
                 <label for="location">Lokalizacja:</label>
                 <input type="text" name="location" value="{{ request.GET.location }}" placeholder="np. Warszawa">
             </div>
-
-            <div class="form-group">
-                <label for="sort">Sortuj:</label>
-                <select name="sort">
-                    <option value="date" {% if request.GET.sort == "date" %}selected{% endif %}>Data rosnąco</option>
-                    <option value="date_desc" {% if request.GET.sort == "date_desc" %}selected{% endif %}>Data malejąco</option>
-                    <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Tytuł</option>
-                </select>
-            </div>
-
             <button type="submit" class="filter-button">Filtruj</button>
         </form>
 
@@ -36,7 +26,6 @@
                 <a href="?sort=title{% if loc %}&location={{ loc }}{% endif %}">Tytuł</a>
             </div>
         {% endwith %}
-
 
         {% if user.is_authenticated %}
             {% for group in user.groups.all %}
