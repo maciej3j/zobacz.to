@@ -1,24 +1,68 @@
 {% extends "base.html" %}
 {% load static %}
 
+
 {% block title %}Zapisz to!{% endblock %}
 
 {% block content %}
-<div class="login-container">
-  <div class="login-card">
-    {% if user.is_authenticated %}
-      <p class="login-title">Witaj, {{ user.username }}!</p>
-      <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="login-button">Wyloguj się</button>
-      </form>
-    {% else %}
-      <p class="login-title">Nie jesteś zalogowany</p>
-      <a href="{% url 'login' %}" class="create-account">Zaloguj się</a>
-    {% endif %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<div class="sidebar">
+  <div class="top">
+    <div class="logo">
+      <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
+      {% if user.is_authenticated %}
+        <span class="username">Witaj, {{ user.username }}</span>
+      {% endif %}
+    </div>
+    <div class="menu">
+      <a href="{% url 'events_list' %}">
+        <i class="fas fa-calendar-alt"></i>
+        <span class="label">Wydarzenia</span>
+      </a>
+      <a href="#">
+        <i class="fas fa-user"></i>
+        <span class="label">Profil</span>
+      </a>
 
-    <div class="divider"><a href="{% url 'events_list' %}">Wszystkie wydarzenia studenckie</a></div>
-
+      <a href="#">
+        <i class="fas fa-cog"></i>
+        <span class="label">Ustawienia</span>
+      </a>
+      <a href="#">
+        <i class="fas fa-info-circle"></i>
+        <span class="label">Kontakt</span>
+      </a>
+    </div>
   </div>
+  <div class="bottom">
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <button type="submit">
+        <i class="fas fa-sign-out-alt"></i>
+        <span class="logout-label">Wyloguj się</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="main-content">
+  <h1>zobacz.to</h1>
+  <p>Twój wirtualny przewodnik po wydarzeniach studenckich</p>
+  {% if enrolled_events %}
+  <h2>Twoje zapisane wydarzenia:</h2>
+  <ul>
+    {% for event in enrolled_events %}
+      <li>
+        <strong>{{ event.title }}</strong><br>
+        Kiedy: {{ event.date }}<br>
+        Gdzie: {{ event.location }}<br>
+        Opis: {{ event.description }}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Nie zapisałeś się na żadne wydarzenia.</p>
+{% endif %}
 </div>
 {% endblock %}
