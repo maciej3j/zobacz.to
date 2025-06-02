@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+
+<div class="sidebar">
+  <div class="top">
+    <div class="logo">
+      <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
+      {% if user.is_authenticated %}
+        <span class="username">Witaj, {{ user.username }}</span>
+      {% endif %}
+    </div>
+    <div class="menu">
+      <a href="{% url 'events_list' %}">
+        <i class="fas fa-calendar-alt"></i>
+        <span class="label">Wydarzenia</span>
+      </a>
+      <a href="#">
+        <i class="fas fa-user"></i>
+        <span class="label">Profil</span>
+      </a>
+      <a href="#">
+        <i class="fas fa-cog"></i>
+        <span class="label">Ustawienia</span>
+      </a>
+      <a href="#">
+        <i class="fas fa-info-circle"></i>
+        <span class="label">Kontakt</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="event-detail-card">
+    <h2 class="event-title">{{ event.title }}</h2>
+    <div class="event-meta">
+      <span><i class="fas fa-calendar-alt"></i> <strong>Kiedy:</strong> {{ event.date }}</span><br>
+      <span><i class="fas fa-map-marker-alt"></i> <strong>Gdzie:</strong> {{ event.location }}</span>
+    </div>
+    <hr>
+    <div class="event-comments-section">
+      <h3><i class="fas fa-comments"></i> Komentarze i oceny</h3>
+      <ul class="comments-list">
+        {% for comment in comments %}
+          <li class="comment-item">
+            <div class="comment-header">
+              <strong>{{ comment.user.username }}</strong>
+              <span class="comment-rating">
+                {% for i in "12345"|make_list %}
+                  {% if forloop.counter <= comment.rating %}
+                    <i class="fas fa-star" style="color:gold"></i>
+                  {% else %}
+                    <i class="far fa-star" style="color:gold"></i>
+                  {% endif %}
+                {% endfor %}
+                ({{ comment.rating }}/5)
+              </span>
+              <span class="comment-date">{{ comment.created_at|date:"Y-m-d H:i" }}</span>
+            </div>
+            <div class="comment-body">
+              {{ comment.comment }}
+            </div>
+          </li>
+        {% empty %}
+          <li class="event-empty">Brak komentarzy.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <hr>
+    {% if user.is_authenticated %}
+      <div class="add-comment-section">
+        <h4>Dodaj komentarz i ocenę</h4>
+        <form method="post" class="comment-form" id="comment-form">
+          {% csrf_token %}
+          <div class="form-group">
+            {{ form.comment.label_tag }}
+            {{ form.comment }}
+          </div>
+          <div class="form-group">
+            <label>Ocena:</label>
+            <span id="star-rating">
+              {% for i in "12345"|make_list %}
+                <i class="fa-star far" data-value="{{ forloop.counter }}"></i>
+              {% endfor %}
+            </span>
+            {{ form.rating }}
+          </div>
+          <button type="submit" class="enroll-button">Dodaj</button>
+        </form>
+      </div>
+      <script>
+        // Gwiazdkowy system oceniania
+        document.addEventListener('DOMContentLoaded', function() {
+          const stars = document.querySelectorAll('#star-rating .fa-star');
+          const ratingInput = document.getElementById('id_rating');
+          function setStars(rating) {
+            stars.forEach((star, idx) => {
+              if (idx < rating) {
+                star.classList.remove('far');
+                star.classList.add('fas');
+              } else {
+                star.classList.remove('fas');
+                star.classList.add('far');
+              }
+            });
+          }
+          stars.forEach(star => {
+            star.addEventListener('mouseenter', function() {
+              setStars(this.dataset.value);
+            });
+            star.addEventListener('mouseleave', function() {
+              setStars(ratingInput.value);
+            });
+            star.addEventListener('click', function() {
+              ratingInput.value = this.dataset.value;
+              setStars(this.dataset.value);
+            });
+          });
+          // Ustaw gwiazdki na wartość z inputa (np. po błędzie walidacji)
+          setStars(ratingInput.value);
+        });
+      </script>
+      <style>
+        #star-rating .fa-star {
+          font-size: 28px;
+          color: gold;
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+        #star-rating .fa-star.far {
+          color: #ccc;
+        }
+        .comment-form textarea,
+        textarea[name="comment"] {
+          width: 100%;
+          min-height: 80px;
+          border-radius: 12px;
+          border: 1.5px solid #bdbdbd;
+          background: #fff;
+          padding: 12px;
+          font-size: 16px;
+          resize: vertical;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+          margin-bottom: 10px;
+        }
+        .comment-form select[name="rating"] {
+          display: none;
+        }
+        .enroll-button {
+        display: inline-block;
+        padding: 12px 36px;
+        background-color: #583d9c;
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 28px;
+        box-shadow: 0 2px 8px rgba(30,94,208,0.08);
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        }
+
+        .enroll-button:hover {
+        background-color: #4941a1;
+        box-shadow: 0 4px 16px rgba(30,94,208,0.15);
+        }
+      </style>
+    {% else %}
+      <p><a href="{% url 'login' %}">Zaloguj się</a>, aby dodać komentarz.</p>
+    {% endif %}
+    <a href="{% url 'events_list' %}" class="back-link">← Wróć do listy wydarzeń</a>
+  </div>
+</div>
+{% endblock %}

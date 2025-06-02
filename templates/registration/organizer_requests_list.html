@@ -6,10 +6,12 @@
     {% for req in requests %}
         <li>
             <strong>Użytkownik:</strong> {{ req.user.username }}<br>
-            <strong>Email:</strong> {{ req.user.email }}<br>
-            <strong>Data rejestracji:</strong> {{ req.user.date_joined }}<br>
-            <strong>Imię:</strong> {{ req.user.first_name }}<br>
-            <strong>Nazwisko:</strong> {{ req.user.last_name }}<br>
+            <strong>Email:</strong> {{ req.email }}<br>
+            <strong>Imię:</strong> {{ req.first_name }}<br>
+            <strong>Nazwisko:</strong> {{ req.last_name }}<br>
+            <strong>Nazwa uczelni:</strong> {{ req.university }}<br>
+            <strong>Kierunek:</strong> {{ req.field_of_study }}<br>
+            <strong>Data zgłoszenia:</strong> {{ req.created_at }}<br>
             <form method="post" action="{% url 'approve_organizer_request' req.id %}" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit">Zatwierdź</button>
