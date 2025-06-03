@@ -7,35 +7,6 @@
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
 
-<div class="sidebar">
-  <div class="top">
-    <div class="logo">
-      <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
-      {% if user.is_authenticated %}
-        <span class="username">Witaj, {{ user.username }}</span>
-      {% endif %}
-    </div>
-    <div class="menu">
-      <a href="{% url 'events_list' %}">
-        <i class="fas fa-calendar-alt"></i>
-        <span class="label">Wydarzenia</span>
-      </a>
-      <a href="#">
-        <i class="fas fa-user"></i>
-        <span class="label">Profil</span>
-      </a>
-      <a href="#">
-        <i class="fas fa-cog"></i>
-        <span class="label">Ustawienia</span>
-      </a>
-      <a href="#">
-        <i class="fas fa-info-circle"></i>
-        <span class="label">Kontakt</span>
-      </a>
-    </div>
-  </div>
-</div>
-
 <div class="main-content">
   <div class="event-detail-card">
     <h2 class="event-title">{{ event.title }}</h2>

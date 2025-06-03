@@ -5,65 +5,7 @@
 {% block title %}Zapisz to!{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="{% static 'css/home.css' %}">
-<div class="sidebar">
-  <div class="top">
-    <div class="logo">
-      <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
-      {% if user.is_authenticated %}
-        <span class="username">Witaj, {{ user.username }}</span>
-      {% endif %}
-    </div>
-    <div class="menu">
-      <a href="{% url 'events_list' %}">
-        <i class="fas fa-calendar-alt"></i>
-        <span class="label">Wydarzenia</span>
-      </a>
-      <a href="#">
-        <i class="fas fa-user"></i>
-        <span class="label">Profil</span>
-      </a>
-      {% if user.is_authenticated %}
-        {% for group in user.groups.all %}
-          {% if group.name == "admin" %}
-            <a href="/accounts/organizer-requests">
-              <i class="fas fa-user-shield"></i>
-              <span class="label">Prośby o organizatora</span>
-            </a>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-      {% if user.is_authenticated %}
-        {% for group in user.groups.all %}
-            {% if group.name == "student" %}
-                <a href="{% url 'organizer_request_create' %}">
-                    <i class="fas fa-user-plus"></i>
-                    <span class="label">Zostań organizatorem</span>
-                </a>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-      <a href="#">
-        <i class="fas fa-cog"></i>
-        <span class="label">Ustawienia</span>
-      </a>
-      <a href="#">
-        <i class="fas fa-info-circle"></i>
-        <span class="label">Kontakt</span>
-      </a>
-    </div>
-  </div>
-  <div class="bottom">
-    <form action="{% url 'logout' %}" method="post">
-      {% csrf_token %}
-      <button type="submit">
-        <i class="fas fa-sign-out-alt"></i>
-        <span class="logout-label">Wyloguj się</span>
-      </button>
-    </form>
-  </div>
-</div>
+
 
 <div class="main-content">
   <h1>zobacz.to</h1>
