@@ -3,6 +3,7 @@ from django.views.generic import ListView
 from .models import Event
 from .forms import EventForm, EventCommentForm
 from .models import EventEnrollment, EventComment
+from django.db.models import Avg
 from django.utils.timezone import now
 from .decorators import organizer_required
 from .decorators import student_required
@@ -29,6 +30,15 @@ class EventListView(ListView):
             queryset = queryset.order_by("title")
 
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            user_enrollments = EventEnrollment.objects.filter(user=self.request.user).values_list('event_id', flat=True)
+            context['user_enrollments'] = set(user_enrollments)
+        else:
+            context['user_enrollments'] = set()
+        return context
 
 @organizer_required
 def add_event(request):
@@ -55,11 +65,6 @@ def delete_event(request, event_id):
         messages.error(request, "Nie masz uprawnień do usunięcia tego wydarzenia.")
     return redirect('events_list')
 
-
-def home(request):
-    events = Event.objects.all()
-    return render(request, 'home.html', {'events': events})
-
 @student_required
 def enroll_in_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -72,17 +77,22 @@ def enroll_in_event(request, event_id):
 
     return redirect('events_list')
 
-@login_required
-def home(request):
-    # Pobierz wydarzenia, na które zalogowany użytkownik się zapisał
-    enrolled_events = Event.objects.filter(eventenrollment__user=request.user).order_by('date')
-    
-    return render(request, 'home.html', {'enrolled_events': enrolled_events})
+@student_required
+def unenroll_from_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    enrollment = event.eventenrollment_set.filter(user=request.user).first()
+    if enrollment:
+        enrollment.delete()
+        messages.success(request, "Zrezygnowano z udziału w wydarzeniu.")
+    else:
+        messages.info(request, "Nie jesteś zapisany na to wydarzenie.")
+    return redirect('event_detail', event_id=event.id)
 
 @login_required
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     comments = event.comments.select_related('user').order_by('-created_at')
+    avg_rating = event.comments.aggregate(avg=Avg('rating'))['avg']  
     if request.method == 'POST':
         form = EventCommentForm(request.POST)
         if form.is_valid():
@@ -94,8 +104,43 @@ def event_detail(request, event_id):
             return redirect('event_detail', event_id=event.id)
     else:
         form = EventCommentForm()
-    return render(request, 'events/event_detail.html', {
+        return render(request, 'events/event_detail.html', {
         'event': event,
         'comments': comments,
         'form': form,
+        'avg_rating': round(avg_rating or 0, 2),  
     })
+
+
+@login_required
+def home(request):
+    if request.user.groups.filter(name='student').exists():
+        enrolled_events = Event.objects.filter(eventenrollment__user=request.user).order_by('date')
+        return render(request, 'home.html', {
+            'enrolled_events': enrolled_events,
+            'is_student': True
+        })
+
+    elif request.user.groups.filter(name='organizer').exists():
+        events = Event.objects.filter(created_by=request.user)
+        event_stats = []
+
+        for event in events:
+            enrollment_count = EventEnrollment.objects.filter(event=event).count()
+            comment_count = EventComment.objects.filter(event=event).count()
+            avg_rating = EventComment.objects.filter(event=event).aggregate(avg=Avg('rating'))['avg']
+
+            event_stats.append({
+                'event': event,
+                'enrollment_count': enrollment_count,
+                'comment_count': comment_count,
+                'avg_rating': round(avg_rating or 0, 2)
+            })
+
+        return render(request, 'home.html', {
+            'event_stats': event_stats,
+            'is_organizer': True
+        })
+
+    else:
+        return render(request, 'home.html', {})

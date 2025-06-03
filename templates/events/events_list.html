@@ -54,16 +54,21 @@
                                 </form>
                             {% endif %}
                         {% endfor %}
-                        {% for group in user.groups.all %}
-                            {% if group.name == "student" %}
+                        {% if user.groups.all.0.name == "student" %}
+                            {% if event.id in user_enrollments %}
+                                <form method="post" action="{% url 'unenroll_event' event.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="unenroll-button">Zrezygnuj</button>
+                                    <span style="margin-left:8px;">Kliknij na wydarzenie żeby zobaczyć komentarze</span>
+                                </form>
+                            {% else %}
                                 <form method="post" action="{% url 'enroll_in_event' event.id %}">
                                     {% csrf_token %}
                                     <button type="submit" class="enroll-button">Zapisz się</button>
                                     <span style="margin-left:8px;">Kliknij na wydarzenie żeby zobaczyć komentarze</span>
                                 </form>
-                                
                             {% endif %}
-                        {% endfor %}
+                        {% endif %}
                     {% endif %}
 
                     {% if messages %}
@@ -81,5 +86,4 @@
         </ul>
     </div>
 </div>
-
 {% endblock content %}

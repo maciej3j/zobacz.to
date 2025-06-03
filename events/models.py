@@ -32,3 +32,15 @@ class EventComment(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ({self.rating}/5): {self.comment[:30]}"
+    
+class Rating(models.Model):
+    event = models.ForeignKey('Event', related_name='ratings', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    stars = models.PositiveSmallIntegerField()  # 1–5
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('event', 'user')  # jeden użytkownik może ocenić dane wydarzenie tylko raz
+
+    def __str__(self):
+        return f'{self.user} rated {self.event} - {self.stars}★'
