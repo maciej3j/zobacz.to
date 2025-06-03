@@ -60,7 +60,6 @@ def enroll_in_event(request, event_id):
 
 @login_required
 def home(request):
-    # Pobierz wydarzenia, na które zalogowany użytkownik się zapisał
     enrolled_events = Event.objects.filter(eventenrollment__user=request.user).order_by('date')
     
     return render(request, 'home.html', {'enrolled_events': enrolled_events})
