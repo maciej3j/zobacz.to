@@ -5,5 +5,7 @@ from .views import EventListView
 urlpatterns = [
     path("", EventListView.as_view(), name="events_list" ),
     path('add/', views.add_event, name='add_event'),
-    path('zapisz-sie/<int:event_id>/', views.enroll_in_event, name='enroll_in_event')
+    path('zapisz-sie/<int:event_id>/', views.enroll_in_event, name='enroll_in_event'),
+    path('delete/<int:event_id>/', views.delete_event, name='delete_event'),
+    path('event/<int:event_id>/', views.event_detail, name='event_detail'),
 ]

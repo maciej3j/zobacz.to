@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from .models import Event
-from .forms import EventForm
-from .models import EventEnrollment
+from .forms import EventForm, EventCommentForm
+from .models import EventEnrollment, EventComment
 from django.utils.timezone import now
 from .decorators import organizer_required
 from .decorators import student_required
@@ -35,11 +35,25 @@ def add_event(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
-            form.save()
+            event = form.save(commit=False)
+            event.created_by = request.user
+            event.save()
             return redirect('events_list')
     else:
         form = EventForm()
     return render(request, 'events/add_event.html', {'form': form})
+
+@login_required
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    is_admin = request.user.groups.filter(name="admin").exists()
+    is_owner = event.created_by == request.user
+    if is_admin or is_owner:
+        event.delete()
+        messages.success(request, "Wydarzenie zostało usunięte.")
+    else:
+        messages.error(request, "Nie masz uprawnień do usunięcia tego wydarzenia.")
+    return redirect('events_list')
 
 
 def home(request):
@@ -63,3 +77,24 @@ def home(request):
     enrolled_events = Event.objects.filter(eventenrollment__user=request.user).order_by('date')
     
     return render(request, 'home.html', {'enrolled_events': enrolled_events})
+
+@login_required
+def event_detail(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    comments = event.comments.select_related('user').order_by('-created_at')
+    if request.method == 'POST':
+        form = EventCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.event = event
+            comment.user = request.user
+            comment.save()
+            messages.success(request, "Twój komentarz został dodany.")
+            return redirect('event_detail', event_id=event.id)
+    else:
+        form = EventCommentForm()
+    return render(request, 'events/event_detail.html', {
+        'event': event,
+        'comments': comments,
+        'form': form,
+    })

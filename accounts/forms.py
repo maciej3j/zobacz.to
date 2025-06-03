@@ -25,3 +25,8 @@ class CustomUserCreationForm(UserCreationForm):
             if self.cleaned_data.get("request_organizer"):
                 OrganizerRequest.objects.create(user=user)
         return user
+    
+class OrganizerRequestForm(forms.ModelForm):
+    class Meta:
+        model = OrganizerRequest
+        fields = ['first_name', 'last_name', 'email', 'university', 'field_of_study']

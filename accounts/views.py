@@ -5,8 +5,9 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import Group
 from .forms import CustomUserCreationForm
-from .decorators import admin_required
+from .decorators import admin_required, student_required
 from .models import OrganizerRequest
+from .forms import OrganizerRequestForm
 
 
 class SignUpView(CreateView):
@@ -41,3 +42,22 @@ def reject_organizer_request(request, pk):
     req.is_approved = False
     req.save()
     return redirect("organizer_requests_list")
+
+@student_required
+def organizer_request_create(request):
+    if not request.user.groups.filter(name="student").exists():
+        return redirect('home')
+    if request.method == 'POST':
+        form = OrganizerRequestForm(request.POST)
+        if form.is_valid():
+            organizer_request = form.save(commit=False)
+            organizer_request.user = request.user
+            organizer_request.save()
+            return render(request, 'registration/organizer_request_sent.html')
+    else:
+        form = OrganizerRequestForm(initial={
+            'email': request.user.email,
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+        })
+    return render(request, 'registration/organizer_request_form.html', {'form': form})
