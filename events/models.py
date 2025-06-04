@@ -46,10 +46,17 @@ class Rating(models.Model):
         return f'{self.user} rated {self.event} - {self.stars}★'
     
 class Announcement(models.Model):
-    title = models.CharField("Tytuł", max_length=200)
-    content = models.TextField("Treść")
+    CATEGORY_CHOICES = [
+        ('ogloszenie', 'Ogłoszenie'),
+        ('nowosc', 'Nowość'),
+        ('wydarzenie', 'Wydarzenie'),
+        ('informacja', 'Informacja'),
+        ('edukacja', 'Edukacja'),
+    ]
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.title
