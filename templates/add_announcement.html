@@ -1,0 +1,14 @@
+<!-- filepath: templates/add_announcement.html -->
+{% extends "base.html" %}
+{% block title %}Dodaj ogłoszenie{% endblock %}
+{% block content %}
+<div class="main-content">
+  <h2>Dodaj ogłoszenie</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="add-event-button">Dodaj</button>
+  </form>
+  <a href="{% url 'home' %}" class="back-link">← Wróć</a>
+</div>
+{% endblock %}
