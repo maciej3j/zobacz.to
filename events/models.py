@@ -44,3 +44,12 @@ class Rating(models.Model):
 
     def __str__(self):
         return f'{self.user} rated {self.event} - {self.stars}★'
+    
+class Announcement(models.Model):
+    title = models.CharField("Tytuł", max_length=200)
+    content = models.TextField("Treść")
+    created_at = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.title

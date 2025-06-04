@@ -1,3 +1,4 @@
+<!-- filepath: templates/home.html -->
 {% extends "base.html" %}
 {% load static %}
 
@@ -5,13 +6,37 @@
 
 {% block content %}
 <div class="main-content">
-  <div class="home-header">
-    <h1>zobacz.to</h1>
-    <p>Twój wirtualny przewodnik po wydarzeniach studenckich</p>
-  </div>
-  <div class="home-flex">
-    <div class="home-left">
-      <h2>Aktualności i ogłoszenia</h2>
+  <h1>zobacz.to</h1>
+  <p>Twój wirtualny przewodnik po wydarzeniach studenckich</p>
+
+  <h2>Ogłoszenia</h2>
+  {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+    <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
+  {% endif %}
+  {% if announcements %}
+    <ul>
+      {% for announcement in announcements %}
+        <li>
+          <strong>{{ announcement.title }}</strong><br>
+          {{ announcement.content }}<br>
+          <small>{{ announcement.created_at|date:"Y-m-d H:i" }}</small>
+          {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+            <form method="post" action="{% url 'delete_announcement' announcement.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno usunąć ogłoszenie?');">Usuń</button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Brak ogłoszeń.</p>
+  {% endif %}
+
+  {% if is_student %}
+    <h2>Twoje zapisane wydarzenia:</h2>
+    {% if enrolled_events %}
+
       <ul>
         <li>Brak ogłoszeń.</li>
         <!-- Możesz tu dodać dynamiczne ogłoszenia -->

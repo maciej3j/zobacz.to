@@ -1,15 +1,16 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from .models import Event
-from .forms import EventForm, EventCommentForm
-from .models import EventEnrollment, EventComment
+from .forms import EventForm, EventCommentForm, AnnouncementForm
+from .models import EventEnrollment, EventComment, Announcement
 from django.db.models import Avg
 from django.utils.timezone import now
-from .decorators import organizer_required
+from .decorators import organizer_required, admin_required
 from .decorators import student_required
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django import forms
 
 class EventListView(ListView):
     model = Event
@@ -114,11 +115,14 @@ def event_detail(request, event_id):
 
 @login_required
 def home(request):
+    announcements = Announcement.objects.order_by('-created_at')[:5]  # pobierz 5 najnowszych ogłoszeń
+
     if request.user.groups.filter(name='student').exists():
         enrolled_events = Event.objects.filter(eventenrollment__user=request.user).order_by('date')
         return render(request, 'home.html', {
             'enrolled_events': enrolled_events,
-            'is_student': True
+            'is_student': True,
+            'announcements': announcements,
         })
 
     elif request.user.groups.filter(name='organizer').exists():
@@ -139,8 +143,28 @@ def home(request):
 
         return render(request, 'home.html', {
             'event_stats': event_stats,
-            'is_organizer': True
+            'is_organizer': True,
+            'announcements': announcements,
         })
 
     else:
-        return render(request, 'home.html', {})
+        return render(request, 'home.html', {'announcements': announcements})
+
+@admin_required
+def add_announcement(request):
+    if request.method == 'POST':
+        form = AnnouncementForm(request.POST)
+        if form.is_valid():
+            announcement = form.save(commit=False)
+            announcement.author = request.user
+            announcement.save()
+            return redirect('home')
+    else:
+        form = AnnouncementForm()
+    return render(request, 'add_announcement.html', {'form': form})
+
+@admin_required
+def delete_announcement(request, announcement_id):
+    announcement = get_object_or_404(Announcement, id=announcement_id)
+    announcement.delete()
+    return redirect('home')

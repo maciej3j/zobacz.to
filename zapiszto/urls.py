@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
 from events.views import home
+from events import views as event_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +26,7 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("events/", include("events.urls")),
     path("", home, name="home"),
+    path('add-announcement/', event_views.add_announcement, name='add_announcement'),
+    path('delete-announcement/<int:announcement_id>/', event_views.delete_announcement, name='delete_announcement'),
     
 ]
