@@ -1,15 +1,38 @@
+<!-- filepath: templates/home.html -->
 {% extends "base.html" %}
 {% load static %}
-
 
 {% block title %}Zapisz to!{% endblock %}
 
 {% block content %}
 
-
 <div class="main-content">
   <h1>zobacz.to</h1>
   <p>Twój wirtualny przewodnik po wydarzeniach studenckich</p>
+
+  <h2>Ogłoszenia</h2>
+  {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+    <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
+  {% endif %}
+  {% if announcements %}
+    <ul>
+      {% for announcement in announcements %}
+        <li>
+          <strong>{{ announcement.title }}</strong><br>
+          {{ announcement.content }}<br>
+          <small>{{ announcement.created_at|date:"Y-m-d H:i" }}</small>
+          {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+            <form method="post" action="{% url 'delete_announcement' announcement.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno usunąć ogłoszenie?');">Usuń</button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Brak ogłoszeń.</p>
+  {% endif %}
 
   {% if is_student %}
     <h2>Twoje zapisane wydarzenia:</h2>
