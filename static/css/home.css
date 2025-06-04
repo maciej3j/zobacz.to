@@ -138,7 +138,8 @@ body {
 
 .main-content {
     flex: 1;
-    padding: 40px;
+    padding-left: 40px;
+    padding-top: 5px;
     margin-left: 90px;
     transition: margin-left 0.4s ease;
     overflow-y: auto;
@@ -147,4 +148,50 @@ body {
 
 .sidebar:hover ~ .main-content {
     margin-left: 250px;
+}
+
+.home-flex {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.home-left,
+.home-right {
+    border-radius: 12px;
+    padding: 32px 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    min-width: 0;
+    width: 50%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.home-left {
+    background: #fff;
+}
+
+.home-right {
+    background: #f8f6fa;
+}
+.home-header {
+    background: linear-gradient(135deg, var(--medium-purple), var(--dark-purple));
+    border-radius: 16px;
+    padding: 32px 48px;
+    color: var(--white);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+    margin-bottom: 40px;
+}
+
+.home-header h1 {
+    font-size: 2.8rem;
+    margin: 0 0 10px;
+    letter-spacing: 1.5px;
+}
+
+.home-header p {
+    font-size: 1.25rem;
+    margin: 0;
+    opacity: 0.9;
 }
