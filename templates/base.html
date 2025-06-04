@@ -12,13 +12,13 @@
 <div class="sidebar">
   <div class="top">
     <div class="logo">
-  <a href="{% url 'home' %}">
-    <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
-  </a>
-  {% if user.is_authenticated %}
-    <span class="username">Witaj, {{ user.username }}</span>
-  {% endif %}
-</div>
+      <a href="{% url 'home' %}">
+        <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
+      </a>
+      {% if user.is_authenticated %}
+        <span class="username">Witaj, {{ user.username }}</span>
+      {% endif %}
+    </div>
     <div class="menu">
       <a href="{% url 'events_list' %}">
         <i class="fas fa-calendar-alt"></i>
