@@ -5,81 +5,54 @@
 {% block title %}Zapisz to!{% endblock %}
 
 {% block content %}
-<div class="main-content">
-  <h1>zobacz.to</h1>
-  <p>Twój wirtualny przewodnik po wydarzeniach studenckich</p>
-
-  <h2>Ogłoszenia</h2>
-  {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
-    <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
-  {% endif %}
-  {% if announcements %}
-    <ul>
-      {% for announcement in announcements %}
-        <li>
-          <strong>{{ announcement.title }}</strong><br>
-          {{ announcement.content }}<br>
-          <small>{{ announcement.created_at|date:"Y-m-d H:i" }}</small>
-          {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
-            <form method="post" action="{% url 'delete_announcement' announcement.id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno usunąć ogłoszenie?');">Usuń</button>
-            </form>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>Brak ogłoszeń.</p>
-  {% endif %}
-
-  {% if is_student %}
-    <h2>Twoje zapisane wydarzenia:</h2>
-    {% if enrolled_events %}
-
-      <ul>
-        <li>Brak ogłoszeń.</li>
-        <!-- Możesz tu dodać dynamiczne ogłoszenia -->
-      </ul>
+<div class="main-content no-header">
+  <div class="home-flex full-height">
+    <!-- Lewa kolumna: Aktualności i ogłoszenia -->
+    <div class="home-left flat">
+      <h2>Aktualności i ogłoszenia</h2>
+      <div class="announcement-list">
+        {% if announcements %}
+          {% for ann in announcements %}
+            <div class="announcement-card {{ ann.category }}">
+              <div class="announcement-icon">
+                <i class="{{ ann.icon }}"></i>
+              </div>
+              <div class="announcement-text">
+                <h3>{{ ann.title }}</h3>
+                <p>{{ ann.description }}</p>
+                <span class="meta">{{ ann.category_display }} • {{ ann.date }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>Brak ogłoszeń.</p>
+        {% endif %}
+      </div>
     </div>
-    <div class="home-right">
-      {% if is_student %}
-        <h2>Twoje zapisane wydarzenia:</h2>
-        {% if enrolled_events %}
-          <ul>
-            {% for event in enrolled_events %}
-              <li>
-                <strong>{{ event.title }}</strong><br>
-                Kiedy: {{ event.date }}<br>
-                Gdzie: {{ event.location }}<br>
-                <!-- Opis: {{ event.description }} -->
-              </li> 
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p>Nie zapisałeś się na żadne wydarzenia.</p>
-        {% endif %}
-      {% elif is_organizer %}
-        <h2>Twoje wydarzenia jako organizator:</h2>
-        {% if event_stats %}
-          <ul>
-            {% for stat in event_stats %}
-              <li>
-                <strong>{{ stat.event.title }}</strong><br>
-                Kiedy: {{ stat.event.date }}<br>
-                Gdzie: {{ stat.event.location }}<br>
-                Opis: {{ stat.event.description }}<br>
-                <strong>Liczba zapisanych osób:</strong> {{ stat.enrollment_count }}<br>
-                <strong>Liczba komentarzy:</strong> {{ stat.comment_count }}<br>
-                <strong>Średnia ocena:</strong> {{ stat.avg_rating }} / 5
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p>Nie stworzyłeś jeszcze żadnych wydarzeń.</p>
-        {% endif %}
+
+    <!-- Prawa kolumna: Nadchodzące wydarzenia -->
+    <div class="home-right flat">
+      <h2>Twoje wydarzenia</h2>
+      {% if enrolled_events %}
+        <div class="event-list">
+          {% for event in enrolled_events %}
+            <div class="event-card">
+              <div class="event-info">
+                <i class="fa-solid fa-calendar-day event-icon"></i>
+                <div class="event-details">
+                  <strong>{{ event.title }}</strong>
+                  <span>{{ event.date }}, {{ event.time }}</span>
+                </div>
+              </div>
+              <span class="badge">Zapisany</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>Nie zapisałeś się na żadne wydarzenia.</p>
       {% endif %}
     </div>
   </div>
 </div>
 {% endblock %}
+
