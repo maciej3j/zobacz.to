@@ -21,4 +21,4 @@ class EventCommentForm(forms.ModelForm):
 class AnnouncementForm(forms.ModelForm):
     class Meta:
         model = Announcement
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'category']

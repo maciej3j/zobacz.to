@@ -10,24 +10,33 @@
     <!-- Lewa kolumna: Aktualności i ogłoszenia -->
     <div class="home-left flat">
       <h2>Aktualności i ogłoszenia</h2>
-      <div class="announcement-list">
-        {% if announcements %}
-          {% for ann in announcements %}
-            <div class="announcement-card {{ ann.category }}">
-              <div class="announcement-icon">
-                <i class="{{ ann.icon }}"></i>
+      {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+        <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
+      {% endif %}
+        <div class="announcement-list">
+          {% if announcements %}
+            {% for ann in announcements %}
+              <div class="announcement-card {{ ann.category }}">
+                <div class="announcement-icon">
+                  <i class="{{ ann.icon }}"></i>
+                </div>
+                <div class="announcement-text">
+                  <h3>{{ ann.title }}</h3>
+                  <p>{{ ann.content }}</p>
+                  <span class="meta">{{ ann.category_display }} • {{ ann.created_at }}</span>
+                </div>
+                {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+                  <form method="post" action="{% url 'delete_announcement' ann.id %}" style="margin-left:auto;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to ogłoszenie?');">Usuń</button>
+                  </form>
+                {% endif %}
               </div>
-              <div class="announcement-text">
-                <h3>{{ ann.title }}</h3>
-                <p>{{ ann.description }}</p>
-                <span class="meta">{{ ann.category_display }} • {{ ann.date }}</span>
-              </div>
-            </div>
-          {% endfor %}
-        {% else %}
-          <p>Brak ogłoszeń.</p>
-        {% endif %}
-      </div>
+            {% endfor %}
+          {% else %}
+            <p>Brak ogłoszeń.</p>
+          {% endif %}
+        </div>
     </div>
 
     <!-- Prawa kolumna: Nadchodzące wydarzenia -->
