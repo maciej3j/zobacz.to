@@ -5,7 +5,6 @@
 {% block title %}Zapisz to!{% endblock %}
 
 {% block content %}
-
 <div class="main-content">
   <h1>zobacz.to</h1>
   <p>Twój wirtualny przewodnik po wydarzeniach studenckich</p>
@@ -37,39 +36,50 @@
   {% if is_student %}
     <h2>Twoje zapisane wydarzenia:</h2>
     {% if enrolled_events %}
+
       <ul>
-        {% for event in enrolled_events %}
-          <li>
-            <strong>{{ event.title }}</strong><br>
-            Kiedy: {{ event.date }}<br>
-            Gdzie: {{ event.location }}<br>
-            Opis: {{ event.description }}
-          </li>
-        {% endfor %}
+        <li>Brak ogłoszeń.</li>
+        <!-- Możesz tu dodać dynamiczne ogłoszenia -->
       </ul>
-    {% else %}
-      <p>Nie zapisałeś się na żadne wydarzenia.</p>
-    {% endif %}
-  
-  {% elif is_organizer %}
-    <h2>Twoje wydarzenia jako organizator:</h2>
-    {% if event_stats %}
-      <ul>
-        {% for stat in event_stats %}
-          <li>
-            <strong>{{ stat.event.title }}</strong><br>
-            Kiedy: {{ stat.event.date }}<br>
-            Gdzie: {{ stat.event.location }}<br>
-            Opis: {{ stat.event.description }}<br>
-            <strong>Liczba zapisanych osób:</strong> {{ stat.enrollment_count }}<br>
-            <strong>Liczba komentarzy:</strong> {{ stat.comment_count }}<br>
-            <strong>Średnia ocena:</strong> {{ stat.avg_rating }} / 5
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>Nie stworzyłeś jeszcze żadnych wydarzeń.</p>
-    {% endif %}
-  {% endif %}
+    </div>
+    <div class="home-right">
+      {% if is_student %}
+        <h2>Twoje zapisane wydarzenia:</h2>
+        {% if enrolled_events %}
+          <ul>
+            {% for event in enrolled_events %}
+              <li>
+                <strong>{{ event.title }}</strong><br>
+                Kiedy: {{ event.date }}<br>
+                Gdzie: {{ event.location }}<br>
+                <!-- Opis: {{ event.description }} -->
+              </li> 
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>Nie zapisałeś się na żadne wydarzenia.</p>
+        {% endif %}
+      {% elif is_organizer %}
+        <h2>Twoje wydarzenia jako organizator:</h2>
+        {% if event_stats %}
+          <ul>
+            {% for stat in event_stats %}
+              <li>
+                <strong>{{ stat.event.title }}</strong><br>
+                Kiedy: {{ stat.event.date }}<br>
+                Gdzie: {{ stat.event.location }}<br>
+                Opis: {{ stat.event.description }}<br>
+                <strong>Liczba zapisanych osób:</strong> {{ stat.enrollment_count }}<br>
+                <strong>Liczba komentarzy:</strong> {{ stat.comment_count }}<br>
+                <strong>Średnia ocena:</strong> {{ stat.avg_rating }} / 5
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>Nie stworzyłeś jeszcze żadnych wydarzeń.</p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}

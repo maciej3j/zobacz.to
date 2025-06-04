@@ -17,8 +17,7 @@ body {
 
 .sidebar {
     background-color: var(--dark-purple);
-    width: 90px;
-    transition: width 0.4s ease;
+    width: 250px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -31,10 +30,11 @@ body {
     z-index: 10;
 }
 
-.sidebar:hover {
-    width: 250px;
+.sidebar .username,
+.menu .label,
+.sidebar .logout-label {
+    display: block !important;
 }
-
 .sidebar .top,
 .sidebar .bottom {
     padding: 20px;
@@ -44,7 +44,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: align-items 0.3s ease;
+    
 }
 
 
@@ -59,13 +59,8 @@ body {
 .sidebar .username {
     font-weight: 600;
     font-size: 14px;
-    display: none;
     text-align: left;
     margin-top: 5px;
-}
-
-.sidebar:hover .username {
-    display: block;
 }
 
 .menu {
@@ -90,12 +85,7 @@ body {
 }
 
 .menu .label {
-    display: none;
     font-size: 16px;
-}
-
-.sidebar:hover .menu .label {
-    display: inline;
 }
 
 .sidebar .menu i {
@@ -124,27 +114,67 @@ body {
     transition: background 0.2s;
 }
 
-.sidebar .bottom button:hover {
-    background-color: var(--blue-purple);
-}
-
-.sidebar .logout-label {
-    display: none;
-}
-
-.sidebar:hover .logout-label {
-    display: inline;
-}
 
 .main-content {
     flex: 1;
-    padding: 40px;
+    min-height: 100vh;
+    width: 100vw;
+    max-width: 91%;
+    box-sizing: border-box;
+    padding-left: 40px;
+    padding-top: 5px;
     margin-left: 90px;
     transition: margin-left 0.4s ease;
     overflow-y: auto;
     color: #333;
 }
 
-.sidebar:hover ~ .main-content {
-    margin-left: 250px;
+.home-flex {
+    min-height: 60vh;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    gap: 40px;
+    align-items: stretch;
 }
+
+.home-left {
+    flex: 7 1 0;
+    background: var(--white);
+    min-width: 0;
+    border-radius: 12px;
+    padding: 32px 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    overflow-x: auto;
+}
+.home-right {
+    flex: 3 1 0;
+    background: var(--white);
+    min-width: 0;
+    border-radius: 12px;
+    padding: 32px 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    overflow-x: auto;
+}
+
+.home-header {
+    background: linear-gradient(135deg, var(--medium-purple), var(--dark-purple));
+    border-radius: 16px;
+    padding: 32px 48px;
+    color: var(--white);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+    margin-bottom: 40px;
+}
+
+.home-header h1 {
+    font-size: 2.8rem;
+    margin: 0 0 10px;
+    letter-spacing: 1.5px;
+}
+
+.home-header p {
+    font-size: 1.25rem;
+    margin: 0;
+    opacity: 0.9;
+}                       

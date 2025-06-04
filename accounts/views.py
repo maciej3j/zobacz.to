@@ -32,6 +32,8 @@ def approve_organizer_request(request, pk):
     req.is_approved = True
     req.save()
     organizer_group, _ = Group.objects.get_or_create(name="organizer")
+    student_group = Group.objects.get(name="student")
+    req.user.groups.remove(student_group)
     req.user.groups.add(organizer_group)
     return redirect("organizer_requests_list")
 

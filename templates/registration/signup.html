@@ -1,6 +1,4 @@
-{% extends "base.html" %}
 {% load static %}
-{% block title %}Zarejestruj się{% endblock %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/login.css' %}">
 <div class="login-container">
@@ -9,7 +7,6 @@
         <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
       </div>
         <h2 class="login-title">Witamy na platformie Zapiszto!</h2>
-        
         <form method="post">
             {% csrf_token %}
             {% if messages %}
