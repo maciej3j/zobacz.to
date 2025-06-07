@@ -3,7 +3,7 @@ from django.views.generic import ListView
 from .models import Event
 from .forms import EventForm, EventCommentForm, AnnouncementForm
 from .models import EventEnrollment, EventComment, Announcement
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from django.utils.timezone import now
 from .decorators import organizer_required, admin_required
 from .decorators import student_required
@@ -141,10 +141,20 @@ def home(request):
                 'avg_rating': round(avg_rating or 0, 2)
             })
 
+        organizer_events = (
+            Event.objects.filter(created_by=request.user)
+            .annotate(
+                participants_count=Count('eventenrollment', distinct=True),
+                comments_count=Count('comments', distinct=True),
+                avg_rating=Avg('comments__rating')
+            )
+        )
+
         return render(request, 'home.html', {
             'event_stats': event_stats,
             'is_organizer': True,
             'announcements': announcements,
+            'organizer_events': organizer_events,
         })
 
     else:
