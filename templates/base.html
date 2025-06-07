@@ -15,6 +15,7 @@
       <a href="{% url 'home' %}">
         <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
       </a>
+      <span class="site-name">zobacz.to</span>
       {% if user.is_authenticated %}
         <span class="username">Witaj, {{ user.username }}</span>
       {% endif %}
