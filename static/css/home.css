@@ -272,7 +272,12 @@ body {
     font-weight: 800;
     margin-bottom: 20px;
 }
-
+.home-right h4 {
+    color: var(--medium-purple);
+    font-size: 27px;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
 
 .event-list {
     display: flex;
