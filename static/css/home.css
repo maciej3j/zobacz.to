@@ -175,8 +175,8 @@ body {
 
 /* === LEWA KOLUMNA: OGŁOSZENIA === */
 .home-left {
-  /*display: flex;
-  flex-direction: column;*/
+  display: flex;
+  flex-direction: column;
   flex: 7 1 0;
   background: var(--white);
   padding: 32px;

@@ -179,5 +179,10 @@ def delete_announcement(request, announcement_id):
     announcement.delete()
     return redirect('home')
 
+
 def contact(request):
     return render(request, 'contact.html')
+
+@login_required
+def profile(request):
+    return render(request, 'profile.html')
