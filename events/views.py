@@ -265,34 +265,24 @@ def contact(request):
 
 @login_required
 def profile(request):
-    user = request.user
-    profile = user.userprofile
     if request.method == 'POST':
-        if 'save_personal' in request.POST:
-            personal_form = PersonalDataForm(request.POST, instance=user)
-            if personal_form.is_valid():
-                personal_form.save()
-        elif 'save_academic' in request.POST:
-            academic_form = AcademicDataForm(request.POST, instance=profile)
-            if academic_form.is_valid():
-                academic_form.save()
-        return redirect('profile')
+        user = request.user
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.email = request.POST.get('email')
+        user.save()
 
-    personal_form = PersonalDataForm(instance=user)
-    academic_form = AcademicDataForm(instance=profile)
+    # Zbieramy wydarzenia, na które zapisany jest student
+    enrolled_events = Event.objects.filter(eventenrollment__user=request.user).order_by('date')
+
+    # Zbieramy wydarzenia utworzone przez organizatora z dodatkowymi statystykami
+    organizer_events = Event.objects.filter(created_by=request.user).annotate(
+        participants_count=Count('eventenrollment', distinct=True),
+        comments_count=Count('comments', distinct=True),
+        avg_rating=Avg('comments__rating')
+    )
 
     return render(request, 'profile.html', {
-        'personal_form': personal_form,
-        'academic_form': academic_form,
+        'enrolled_events': enrolled_events,
+        'organizer_events': organizer_events,
     })
-    return render(request, 'profile.html')
-
-@login_required
-def event_participants_ajax(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    # Tylko organizator-właściciel lub admin może zobaczyć uczestników
-    if event.created_by != request.user and not request.user.groups.filter(name="admin").exists():
-        return JsonResponse({'error': 'Brak uprawnień'}, status=403)
-    enrollments = EventEnrollment.objects.filter(event=event).select_related('user')
-    html = render_to_string('events/participants_list_fragment.html', {'enrollments': enrollments, 'event': event}, request=request)
-    return JsonResponse({'html': html})

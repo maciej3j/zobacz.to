@@ -1,55 +1,233 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Mój Profil{% endblock %}
+{% block title %}Twój Profil{% endblock %}
 
 {% block content %}
-<div class="profile-page">
-  <h1>Mój Profil</h1>
-  <p>Zarządzaj swoimi danymi i preferencjami.</p>
+<div class="main-content no-header">
+  <div class="home-flex full-height">
 
-  <section class="section-box">
-    <h2><i class="fas fa-id-card"></i> Dane Osobowe i Logowania</h2>
-    <form method="POST">
-      {% csrf_token %}
-      <div class="form-row">
-        <form method="post">
-          {% csrf_token %}
-          {{ personal_form.as_p }}
-          <button type="submit" name="save_personal">Zapisz dane osobowe</button>
-        </form>
- </div>
-   <section class="section-box">
-    <h2><i class="fas fa-graduation-cap"></i> Informacje Akademickie</h2>
-    
-    <div class="form-row">
-        <form method="post">
-          {% csrf_token %}
-          {{ academic_form.as_p }}
-          <button type="submit" name="save_academic">Zapisz dane akademickie</button>
-    </form> 
-  </div> 
-  </section>
+    <!-- LEWA KOLUMNA (główna część profilu) -->
+    <div class="home-left flat">
+      <div class="home-left-content profile-main-content">
+        <!-- Sekcja nagłówka profilu - bez avatara -->
+        <div class="profile-info">
+          <h1>Twój Profil</h1>
+          <p class="profile-desc">Zarządzaj swoimi danymi i preferencjami.</p>
+        </div>
 
-  <section class="section-box">
-    <h2><i class="fas fa-heart"></i> Moje Zainteresowania</h2>
-    <div class="tags">
-      <span>Programowanie</span>
-      <span>Sztuczna Inteligencja</span>
-      <span>E-sport</span>
-      <span>Muzyka Rockowa</span>
-      <span>Fotografia</span>
-      <span>Podróże</span>
+        <hr class="section-divider"> <!-- Zmieniono na section-divider, aby pasowało do home.css -->
+
+        <div class="section-box">
+          <h2 class="section-title"><i class="fas fa-id-card"></i> Dane Osobowe i Logowania</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="first_name">Imię</label>
+              <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" readonly>
+            </div>
+            <div class="form-group">
+              <label for="last_name">Nazwisko</label>
+              <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" readonly>
+            </div>
+            <div class="form-group full-width">
+              <label for="email">Adres e-mail</label>
+              <input type="email" id="email" name="email" value="{{ user.email }}" readonly>
+            </div>
+            <div class="form-group full-width">
+              <label for="password">Hasło</label>
+              <div class="password-input-group">
+                <input type="password" id="password" name="password" value="********" readonly>
+                <button type="button" class="btn-secondary change-password-btn">Zmień hasło</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <h2 class="section-title"><i class="fas fa-university"></i> Informacje Akademickie</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="university">Uczelnia</label>
+              <input type="text" id="university" name="university" value="Politechnika Łódzka" readonly>
+            </div>
+            <div class="form-group">
+              <label for="faculty">Wydział</label>
+              <input type="text" id="faculty" name="faculty" value="Wydział Elektrotechniki, Elektroniki, Informatyki" readonly>
+            </div>
+            <div class="form-group">
+              <label for="study_field">Kierunek studiów</label>
+              <input type="text" id="study_field" name="study_field" value="Informatyka Stosowana" readonly>
+            </div>
+            <div class="form-group">
+              <label for="study_year">Rok studiów</label>
+              <input type="text" id="study_year" name="study_year" value="3" readonly>
+            </div>
+            <div class="form-group full-width">
+              <label for="main_discipline">Główna dyscyplina naukowa</label>
+              <input type="text" id="main_discipline" name="main_discipline" value="Nauki informatyczno-telekomunikacyjne" readonly>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <h2 class="section-title"><i class="fas fa-heart"></i> Moje Zainteresowania</h2>
+          <div class="interests">
+            <!-- Example tags; these would ideally be dynamic -->
+            <span class="tag">Programowanie</span>
+            <span class="tag">Sztuczna Inteligencja</span>
+            <span class="tag">E-sport</span>
+            <span class="tag">Muzyka Rockowa</span>
+            <span class="tag">Fotografia</span>
+            <span class="tag">Podróże</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="edit-profile-btn">Edytuj profil</button>
+        <button class="btn-primary" id="save-profile-btn" style="display: none;">Zapisz zmiany</button>
+      </div>
+
+      <!--Footer-->
+      <footer class="site-footer">
+        <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
+      </footer>
     </div>
-  </section>
+
+    <!-- PRAWA KOLUMNA (Twoje wydarzenia) -->
+    <div class="home-right flat">
+      {% if user.is_authenticated and user.groups.all.0.name == "student" %}
+        <h2>Twoje wydarzenia</h2>
+        <hr class="section-divider">
+        {% if enrolled_events %}
+          <div class="event-list">
+            {% for event in enrolled_events %}
+              <div class="event-card">
+                <div class="event-info">
+                  <i class="fa-solid fa-calendar-day event-icon"></i>
+                  <div class="event-details">
+                    <strong>{{ event.title }}</strong>
+                    <span>{{ event.date }}, {{ event.time }}</span>
+                  </div>
+                </div>
+                <span class="badge">Zapisany</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>Nie zapisałeś się na żadne wydarzenia.</p>
+        {% endif %}
+      {% endif %}
+
+      {% if organizer_events %}
+        <h2>Twoje utworzone wydarzenia</h2>
+        <hr class="section-divider">
+        {% if organizer_events %}
+          <div class="event-list">
+            {% for event in organizer_events %}
+              <div class="event-card">
+                <div class="event-info">
+                  <i class="fa-solid fa-calendar-plus event-icon"></i>
+                  <div class="event-details">
+                    <strong>{{ event.title }}</strong>
+                    <span>{{ event.date }}</span>
+                  </div>
+                </div>
+                <div class="event-stats">
+                  <span class="badge">Zapisani: {{ event.participants_count }}</span>
+                  <br><br>
+                  <span class="badge">Komentarze: {{ event.comments_count }}</span>
+                  <br><br>
+                  <span class="badge">Ocena:
+                    {% if event.avg_rating %}
+                      {% with avg=event.avg_rating|floatformat:1 %}
+                        {% for i in "12345" %}
+                          {% if forloop.counter <= event.avg_rating %}
+                            <i class="fa fa-star" style="color:gold"></i>
+                          {% elif forloop.counter0 < event.avg_rating %}
+                            <i class="fa fa-star-half-alt" style="color:gold"></i>
+                          {% else %}
+                            <i class="fa fa-star" style="color:#ccc"></i>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
+                    {% else %}
+                      Brak ocen
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
 </div>
 
-<aside class="quick-actions">
-  <h3>Szybkie Akcje</h3>
-  <ul>
-    <li><i class="fas fa-calendar-check"></i> Moje zapisane wydarzenia</li>
-    <li><i class="fas fa-bell"></i> Ustawienia powiadomień</li>
-    <li><i class="fas fa-user-shield"></i> Bezpieczeństwo konta</li>
-  </ul>
-</aside>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const editButton = document.getElementById('edit-profile-btn');
+    const saveButton = document.getElementById('save-profile-btn');
+    const inputs = document.querySelectorAll('.profile-main-content input:not([name="password"])'); // Exclude password from direct edit
+    const changePasswordBtn = document.querySelector('.change-password-btn');
+
+    // Initial state: all inputs are readonly except password, which is special.
+    inputs.forEach(input => input.setAttribute('readonly', 'readonly'));
+
+    editButton.addEventListener('click', function () {
+      inputs.forEach(input => {
+        input.removeAttribute('readonly');
+      });
+      editButton.style.display = 'none';
+      saveButton.style.display = 'inline-block';
+    });
+
+    saveButton.addEventListener('click', function() {
+      // In a real application, you would send this data to a server
+      // For demonstration, we just disable inputs again.
+      inputs.forEach(input => {
+        input.setAttribute('readonly', 'readonly');
+      });
+      saveButton.style.display = 'none';
+      editButton.style.display = 'inline-block';
+      // Here you would typically send an AJAX request to save the data
+      console.log('Profile saved!');
+    });
+
+    changePasswordBtn.addEventListener('click', function() {
+      // In a real application, this would open a modal or redirect to a password change page
+      // Using a custom modal is recommended instead of alert()
+      const message = 'Funkcja zmiany hasła zostanie zaimplementowana w przyszłości.';
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 1000;
+        text-align: center;
+        max-width: 300px;
+      `;
+      modal.innerHTML = `
+        <p>${message}</p>
+        <button onclick="this.parentNode.remove()" style="
+          background-color: #4B0082;
+          color: white;
+          padding: 8px 15px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 10px;
+        ">OK</button>
+      `;
+      document.body.appendChild(modal);
+    });
+  });
+</script>
 {% endblock %}
+```

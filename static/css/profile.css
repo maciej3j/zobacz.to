@@ -1,98 +1,178 @@
-.profile-page {
-  margin-left: 270px;
-  padding: 40px;
-  max-width: 900px;
+/*
+ * profile.css - Style overrides and additions specifically for the user profile page.
+ * General layout styles for .main-content, .home-flex, .home-left, .home-right, and .site-footer
+ * should primarily be handled by home.css. This file focuses on the content
+ * within the .home-left column and specific visual adjustments that apply ONLY to the profile page.
+ */
+
+/*
+ * Note: Layout rules for .main-content, .home-flex, .home-left, .home-right, and global media queries
+ * are now solely managed by home.css. This file only contains specific overrides for profile content.
+ */
+
+/* Dostosowanie głównego tytułu profilu ("Twój Profil") do stylu nagłówka z prawej kolumny */
+.home-left-content .profile-info h1 {
+    color: var(--medium-purple); /* Kolor z home.css dla h2 w home-right */
+    font-size: 2.1rem; /* Rozmiar z home.css dla h2 w home-right */
+    font-weight: 800;
+    margin: 0 0 5px; /* Minimalny margines pod tytułem */
 }
 
-h1 {
-  font-size: 32px;
-  color: #3b0a58;
+/* Dostosowanie koloru opisu profilu ("Zarządzaj swoimi danymi i preferencjami.") */
+.home-left-content .profile-desc {
+    color: #444; /* Kolor pasujący do reszty tekstu */
+    font-size: 16px; /* Zachowany oryginalny rozmiar */
+    margin: 0;
 }
 
+/* Styl dla linii rozdzielającej pod nagłówkiem profilu */
+.section-divider {
+    border: none;
+    border-top: 2.5px solid var(--medium-purple); /* Grubość i kolor z home.css */
+    margin: 16px 0 18px 0;
+    width: 100%;
+    opacity: 0.8;
+    margin-bottom: 20px; /* Zapewnij odstęp pod linią */
+}
+
+/* Style dla "section-box" (np. "Dane Osobowe i Logowania") */
 .section-box {
-  margin-top: 30px;
-  background-color: #f6f5fb;
-  border-radius: 12px;
-  padding: 25px 30px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    background-color: #f6f5fb; /* Bardzo jasny fiolet */
+    border-radius: 12px;
+    padding: 25px 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.section-box h2 {
-  font-size: 20px;
-  margin-bottom: 20px;
-  color: #3b0a58;
+/* Style dla tytułów sekcji (np. "Dane Osobowe i Logowania") - zmniejszono rozmiar */
+.section-box .section-title {
+    font-size: 1.1rem; /* Zmniejszono rozmiar */
+    margin-bottom: 20px;
+    color: #3b0a58;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Odstęp między ikoną a tekstem */
+    font-weight: 600;
 }
 
-.form-row {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
+/* Ikony w tytułach sekcji */
+.section-box .section-title i {
+    color: var(--medium-purple);
+    font-size: 1.25rem; /* Dopasuj rozmiar ikony do zmniejszonego tekstu */
 }
 
-.form-row label {
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #555;
+/* Układ formularzy i style pól input */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dwie kolumny */
+    gap: 15px 20px; /* Odstępy między wierszami i kolumnami */
 }
 
-.form-row input {
-  padding: 10px;
-  background-color: #e0e0ec;
-  border: none;
-  border-radius: 8px;
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
 }
 
-.password-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.form-group.full-width {
+    grid-column: 1 / -1; /* Rozciąga się na całą szerokość gridu */
 }
 
-.change-password {
-  background-color: #4a4a5e;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #555;
 }
 
-.tags span {
-  display: inline-block;
-  background-color: #a389d4;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 20px;
-  margin: 5px;
-  font-size: 14px;
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid #d0d0e0;
+    background-color: #fcfcff;
+    margin-bottom: 0;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.quick-actions {
-  position: fixed;
-  top: 40px;
-  right: 40px;
-  background-color: #f6f5fb;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+.form-group input:focus {
+    border-color: var(--medium-purple);
+    box-shadow: 0 0 0 2px rgba(88, 61, 156, 0.2);
+    outline: none;
 }
 
-.quick-actions h3 {
-  margin-bottom: 15px;
-  font-size: 18px;
-  color: #3b0a58;
+.form-group input[readonly] {
+    background-color: #e8e8ed;
+    border-color: #d8d8e0;
+    cursor: default;
 }
 
-.quick-actions ul {
-  list-style: none;
-  padding: 0;
+.password-input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
-.quick-actions li {
-  margin-bottom: 10px;
-  font-size: 15px;
-  color: #444;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.password-input-group input {
+    flex-grow: 1;
+}
+
+/* Przyciski */
+.btn-primary {
+    background-color: var(--medium-purple);
+    color: white;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 20px;
+    font-size: 16px;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+    background-color: var(--blue-purple);
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary.change-password-btn {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-secondary.change-password-btn:hover {
+    background-color: #5a6268;
+}
+
+/* Tagi zainteresowań */
+.interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.interests .tag {
+    background-color: #e0d4f7;
+    color: #4B0082;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
 }
