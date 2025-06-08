@@ -9,40 +9,49 @@
   <div class="home-flex full-height">
     <!-- Lewa kolumna: Aktualności i ogłoszenia -->
     <div class="home-left flat">
-      <h2>Aktualności i ogłoszenia</h2>
-      {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
-        <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
+  <div class="home-left-content">
+    <h2>Aktualności i ogłoszenia</h2>
+    <hr class="section-divider">
+    {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+      <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
+    {% endif %}
+    <div class="announcement-list">
+      {% if announcements %}
+        {% for ann in announcements %}
+          <div class="announcement-card {{ ann.category }}">
+            <div class="announcement-icon">
+              <i class="{{ ann.icon }}"></i>
+            </div>
+            <div class="announcement-text">
+              <h3>{{ ann.title }}</h3>
+              <p>{{ ann.content }}</p>
+              <span class="meta">{{ ann.category_display }} • {{ ann.created_at }}</span>
+            </div>
+            {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+              <form method="post" action="{% url 'delete_announcement' ann.id %}" style="margin-left:auto;">
+                {% csrf_token %}
+                <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to ogłoszenie?');">Usuń</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>Brak ogłoszeń.</p>
       {% endif %}
-        <div class="announcement-list">
-          {% if announcements %}
-            {% for ann in announcements %}
-              <div class="announcement-card {{ ann.category }}">
-                <div class="announcement-icon">
-                  <i class="{{ ann.icon }}"></i>
-                </div>
-                <div class="announcement-text">
-                  <h3>{{ ann.title }}</h3>
-                  <p>{{ ann.content }}</p>
-                  <span class="meta">{{ ann.category_display }} • {{ ann.created_at }}</span>
-                </div>
-                {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
-                  <form method="post" action="{% url 'delete_announcement' ann.id %}" style="margin-left:auto;">
-                    {% csrf_token %}
-                    <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to ogłoszenie?');">Usuń</button>
-                  </form>
-                {% endif %}
-              </div>
-            {% endfor %}
-          {% else %}
-            <p>Brak ogłoszeń.</p>
-          {% endif %}
-        </div>
     </div>
+  </div>
+
+  <footer class="site-footer">
+    <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
+  </footer>
+</div>
+
 
     <!-- Prawa kolumna: Nadchodzące wydarzenia -->
     <div class="home-right flat">
       {% if user.is_authenticated and user.groups.all.0.name == "student" %}
         <h2>Twoje wydarzenia</h2>
+        <hr class="section-divider">
         {% if enrolled_events %}
           <div class="event-list">
             {% for event in enrolled_events %}
@@ -64,7 +73,8 @@
       {% endif %}
       <!--dla organizatora -->
       {% if organizer_events %}
-        <h2>Twoje utworzone wydarzenia</h2>
+        <h4>Twoje utworzone wydarzenia</h4>
+        <hr class="section-divider">
         {% if organizer_events %}
           <div class="event-list">
             {% for event in organizer_events %}
@@ -108,6 +118,7 @@
       {% endif %}
     </div>
   </div>
-</div>
+</div> 
+
 {% endblock %}
 
