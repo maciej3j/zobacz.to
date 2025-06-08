@@ -181,4 +181,24 @@ def delete_announcement(request, announcement_id):
 
 @login_required
 def profile(request):
-    return render(request, 'profile.html')
+    if request.method == 'POST':
+        user = request.user
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.email = request.POST.get('email')
+        user.save()
+
+    # Zbieramy wydarzenia, na które zapisany jest student
+    enrolled_events = Event.objects.filter(eventenrollment__user=request.user).order_by('date')
+
+    # Zbieramy wydarzenia utworzone przez organizatora z dodatkowymi statystykami
+    organizer_events = Event.objects.filter(created_by=request.user).annotate(
+        participants_count=Count('eventenrollment', distinct=True),
+        comments_count=Count('comments', distinct=True),
+        avg_rating=Avg('comments__rating')
+    )
+
+    return render(request, 'profile.html', {
+        'enrolled_events': enrolled_events,
+        'organizer_events': organizer_events,
+    })
