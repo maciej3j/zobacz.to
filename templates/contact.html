@@ -1,12 +1,125 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Kontakt{% endblock %}
 {% block content %}
-<div class="contact-card">
-  <h2>Kontakt</h2>
-  <p>Masz pytania lub potrzebujesz pomocy? Skontaktuj się z nami:</p>
-  <ul>
-    <li>Email: <a href="mailto:kontakt@zapiszto.pl">kontakt@zapiszto.pl</a></li>
-    <li>Telefon: 123-456-789</li>
-  </ul>
+<link rel="stylesheet" href="{% static 'css/contact.css' %}">
+<div class="main-content no-header">
+  <div class="home-flex full-height">
+    <!-- Lewa kolumna: Kontakt i FAQ -->
+    <div class="home-left flat">
+      <h2>Skontaktuj się z nami</h2>
+      <p>Masz pytania, sugestie lub potrzebujesz pomocy? Jesteśmy tu dla Ciebie!</p>
+      <div class="contact-faq-flex">
+        <div class="contact-form-block">
+          <h3><i class="fa fa-user"></i> Kontakt z administratorem</h3>
+          <p>W sprawach technicznych, działania portalu lub ogólnych pytań skorzystaj z poniższego formularza.</p>
+          <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-group">
+              {{ form.name.label_tag }}{{ form.name }}
+            </div>
+            <div class="form-group">
+              {{ form.email.label_tag }}{{ form.email }}
+            </div>
+            <div class="form-group">
+              {{ form.subject.label_tag }}{{ form.subject }}
+            </div>
+            <div class="form-group">
+              {{ form.message.label_tag }}{{ form.message }}
+            </div>
+            <button type="submit" class="filter-button"><i class="fa fa-paper-plane"></i> Wyślij wiadomość</button>
+          </form>
+        </div>
+        <div class="contact-info-faq">
+          <div class="contact-info-box">
+            <h4><i class="fa fa-info-circle"></i> Informacje kontaktowe</h4>
+            <p><b>E-mail ogólny:</b> <a href="mailto:{{ contact_info.email }}">{{ contact_info.email }}</a></p>
+            <p><b>Telefon (pomoc techniczna):</b> {{ contact_info.phone }}</p>
+            <p><b>Adres korespondencyjny:</b><br>{{ contact_info.address }}</p>
+          </div>
+          <div class="faq-box">
+            <h4><i class="fa fa-question-circle"></i> Najczęściej zadawane pytania (FAQ)</h4>
+            <ul>
+              {% for faq in faqs %}
+                <li>
+                  <b>{{ faq.question }}</b>
+                  <div>{{ faq.answer }}</div>
+                </li>
+              {% endfor %}
+            </ul>
+            <a href="#" onclick="openFaqModal(); return false;">Zobacz więcej pytań &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Prawa kolumna: Nadchodzące wydarzenia -->
+    <div class="home-right flat">
+      <h2>Nadchodzące wydarzenia</h2>
+      <hr class="section-divider">
+      {% if upcoming_events %}
+        <div class="event-list">
+          {% for event in upcoming_events %}
+            <div class="event-card">
+              <div class="event-info">
+                <i class="fa-solid fa-calendar-day event-icon"></i>
+                <div class="event-details">
+                  <strong>{{ event.title }}</strong>
+                  <span>{{ event.date }}, {{ event.time }}</span>
+                </div>
+              </div>
+              <span class="badge">Zapisany</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>Brak nadchodzących wydarzeń.</p>
+      {% endif %}
+    </div>
+  </div>
 </div>
+
+<!-- Modal FAQ -->
+<div id="faq-modal" class="faq-modal">
+  <div class="faq-modal-backdrop" onclick="closeFaqModal()"></div>
+  <div class="faq-modal-content">
+    <button class="faq-modal-close" onclick="closeFaqModal()">&times;</button>
+    <h3><i class="fa fa-question-circle"></i> Najczęściej zadawane pytania (FAQ)</h3>
+    <div class="faq-modal-scroll">
+      <ul>
+        {% for faq in faqs %}
+          <li>
+            <b>{{ faq.question }}</b>
+            <div>{{ faq.answer }}</div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% if admin_answers and is_student or is_organizer %}
+  <div class="important-announcement">
+    <span class="important-dot"></span>
+    <b>Odpowiedzi od administratora:</b>
+  </div>
+  <div class="admin-answers-list">
+    {% for msg in admin_answers %}
+      <div class="admin-answer-block">
+        <b>Twoje pytanie:</b> {{ msg.subject }}<br>
+        <b>Treść:</b> {{ msg.message }}<br>
+        <hr>
+        <b>Odpowiedź:</b> {{ msg.answer }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+<script>
+function openFaqModal() {
+  document.getElementById('faq-modal').classList.add('active');
+}
+function closeFaqModal() {
+  document.getElementById('faq-modal').classList.remove('active');
+}
+</script>
 {% endblock %}

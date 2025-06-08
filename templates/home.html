@@ -120,5 +120,45 @@
   </div>
 </div> 
 
+{% if admin_answers and is_student or is_organizer %}
+  <div class="important-announcement">
+    <span class="important-dot"></span>
+    <b>Odpowiedź od administratora!</b>
+    <a href="#" onclick="openAnswerModal(); return false;">Zobacz odpowiedź</a>
+  </div>
+{% endif %}
+
+<div id="answer-modal" class="answer-modal">
+  <div class="answer-modal-backdrop" onclick="closeAnswerModal()"></div>
+  <div class="answer-modal-content">
+    <button class="answer-modal-close" onclick="closeAnswerModal()">&times;</button>
+    <h3>Odpowiedź od administratora</h3>
+    {% for msg in admin_answers %}
+      <div class="admin-answer-block">
+        <b>Twoje pytanie:</b> {{ msg.subject }}<br>
+        <b>Treść:</b> {{ msg.message }}<br>
+        <hr>
+        <b>Odpowiedź:</b> {{ msg.answer }}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+<script>
+function openAnswerModal() {
+  document.getElementById('answer-modal').classList.add('active');
+}
+function closeAnswerModal() {
+  document.getElementById('answer-modal').classList.remove('active');
+}
+</script>
+
+{% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div class="message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
 {% endblock %}
 
