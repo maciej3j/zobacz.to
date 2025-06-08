@@ -23,10 +23,10 @@
               {{ form.email.label_tag }}{{ form.email }}
             </div>
             <div class="form-group">
-              {{ form.subject.label_tag }}{{ form.subject }}
+              <label for="{{ form.subject.id_for_label }}">Pytanie</label>{{ form.subject }}
             </div>
             <div class="form-group">
-              {{ form.message.label_tag }}{{ form.message }}
+              <label for="{{ form.message.id_for_label }}">Szczegóły</label>{{ form.message }}
             </div>
             <button type="submit" class="filter-button"><i class="fa fa-paper-plane"></i> Wyślij wiadomość</button>
           </form>
@@ -40,15 +40,37 @@
           </div>
           <div class="faq-box">
             <h4><i class="fa fa-question-circle"></i> Najczęściej zadawane pytania (FAQ)</h4>
-            <ul>
+            <ul class="faq-list">
               {% for faq in faqs %}
-                <li>
-                  <b>{{ faq.question }}</b>
-                  <div>{{ faq.answer }}</div>
+                <li class="faq-item">
+                  <button class="faq-question" type="button" onclick="toggleFaqAnswer(this)">
+                    {{ faq.subject }}
+                    <span class="faq-arrow">&#9660;</span>
+                  </button>
+                  <div class="faq-answer" style="display:none;">
+                    {{ faq.answer }}
+                  </div>
                 </li>
+              {% empty %}
+                <li>Brak pytań z odpowiedzią administratora.</li>
               {% endfor %}
             </ul>
-            <a href="#" onclick="openFaqModal(); return false;">Zobacz więcej pytań &rarr;</a>
+            <a href="#" class="faq-more-link" onclick="openFaqModal(); return false;">
+              Zobacz więcej pytań
+              <span style="font-size:1.2em;">&#8594;</span>
+            </a>
+{% if admin_answers and is_student or is_organizer %}
+      <div class="admin-answers-section">
+        <h3 class="admin-answers-title"><span class="important-dot"></span> Odpowiedzi od administratora</h3>
+        <div class="admin-answers-list">
+          {% for msg in admin_answers %}
+            <div class="admin-answer-block">
+              <b>Twoje pytanie:</b> {{ msg.subject }}<br>
+              <b>Treść:</b> {{ msg.message }}<br>
+              <hr>
+              <b>Odpowiedź:</b> {{ msg.answer }}
+            </div>
+          {% endfor %}
           </div>
         </div>
       </div>
@@ -76,6 +98,10 @@
         <p>Brak nadchodzących wydarzeń.</p>
       {% endif %}
     </div>
+    
+        </div>
+      </div>
+    {% endif %}
   </div>
 </div>
 
@@ -87,9 +113,9 @@
     <h3><i class="fa fa-question-circle"></i> Najczęściej zadawane pytania (FAQ)</h3>
     <div class="faq-modal-scroll">
       <ul>
-        {% for faq in faqs %}
+        {% for faq in all_faqs %}
           <li>
-            <b>{{ faq.question }}</b>
+            <b>{{ faq.subject }}</b>
             <div>{{ faq.answer }}</div>
           </li>
         {% endfor %}
@@ -99,22 +125,32 @@
 </div>
 
 {% if admin_answers and is_student or is_organizer %}
-  <div class="important-announcement">
-    <span class="important-dot"></span>
-    <b>Odpowiedzi od administratora:</b>
-  </div>
-  <div class="admin-answers-list">
-    {% for msg in admin_answers %}
-      <div class="admin-answer-block">
-        <b>Twoje pytanie:</b> {{ msg.subject }}<br>
-        <b>Treść:</b> {{ msg.message }}<br>
-        <hr>
-        <b>Odpowiedź:</b> {{ msg.answer }}
-      </div>
-    {% endfor %}
+  <div class="admin-answers-section">
+    <h3 class="admin-answers-title"><span class="important-dot"></span> Odpowiedzi od administratora</h3>
+    <div class="admin-answers-list">
+      {% for msg in admin_answers %}
+        <div class="admin-answer-block">
+          <b>Twoje pytanie:</b> {{ msg.subject }}<br>
+          <b>Treść:</b> {{ msg.message }}<br>
+          <hr>
+          <b>Odpowiedź:</b> {{ msg.answer }}
+        </div>
+      {% endfor %}
+    </div>
   </div>
 {% endif %}
 <script>
+function toggleFaqAnswer(btn) {
+  const answer = btn.nextElementSibling;
+  const arrow = btn.querySelector('.faq-arrow');
+  if (answer.style.display === 'block') {
+    answer.style.display = 'none';
+    arrow.style.transform = 'rotate(0deg)';
+  } else {
+    answer.style.display = 'block';
+    arrow.style.transform = 'rotate(180deg)';
+  }
+}
 function openFaqModal() {
   document.getElementById('faq-modal').classList.add('active');
 }
