@@ -178,3 +178,7 @@ def delete_announcement(request, announcement_id):
     announcement = get_object_or_404(Announcement, id=announcement_id)
     announcement.delete()
     return redirect('home')
+
+@login_required
+def profile(request):
+    return render(request, 'profile.html')
