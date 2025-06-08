@@ -1,0 +1,45 @@
+<!-- filepath: c:\Projekty\zapiszto\templates\contact_admin.html -->
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Kontakt - Admin{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/contact.css' %}">
+<div class="main-content no-header">
+  <div class="home-flex full-height">
+    <div class="home-left flat">
+      <h2>Wiadomości od użytkowników</h2>
+      <div class="admin-messages-list">
+        {% for msg in messages_list %}
+          <div class="admin-message-block">
+            <b>Od:</b> {{ msg.name }} ({{ msg.email }})<br>
+            <b>Temat:</b> {{ msg.subject }}<br>
+            <b>Treść:</b> {{ msg.message }}<br>
+            <b>Data:</b> {{ msg.created_at|date:"Y-m-d H:i" }}<br>
+            <b>Odpowiedź:</b>
+            <form method="post" style="margin-top:5px;">
+              {% csrf_token %}
+              <input type="hidden" name="answer_message_id" value="{{ msg.id }}">
+              <textarea name="answer" rows="2" style="width:100%;">{{ msg.answer }}</textarea>
+              <button type="submit" class="filter-button" style="margin-top:4px;">Wyślij odpowiedź</button>
+            </form>
+          </div>
+        {% empty %}
+          <p>Brak wiadomości.</p>
+        {% endfor %}
+      </div>
+      <div class="faq-box" style="margin-top:32px;">
+        <h4><i class="fa fa-question-circle"></i> Najczęściej zadawane pytania (FAQ)</h4>
+        <ul>
+          {% for faq in faqs %}
+            <li>
+              <b>{{ faq.question }}</b>
+              <div>{{ faq.answer }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    
+  </div>
+</div>
+{% endblock %}

@@ -9,10 +9,12 @@
   <div class="home-flex full-height">
     <!-- Lewa kolumna: Aktualności i ogłoszenia -->
     <div class="home-left flat">
-      <h2>Aktualności i ogłoszenia</h2>
-      {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
-        <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
-      {% endif %}
+      <div class="home-left-content">
+        <h2>Aktualności i ogłoszenia</h2>
+        <hr class="section-divider">
+        {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+          <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
+        {% endif %}
         <div class="announcement-list">
           {% if announcements %}
             {% for ann in announcements %}
@@ -37,31 +39,147 @@
             <p>Brak ogłoszeń.</p>
           {% endif %}
         </div>
+      </div>
+      <footer class="site-footer">
+        <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
+      </footer>
     </div>
 
     <!-- Prawa kolumna: Nadchodzące wydarzenia -->
     <div class="home-right flat">
-      <h2>Twoje wydarzenia</h2>
-      {% if enrolled_events %}
+      {% if user.is_authenticated and user.groups.all.0.name == "student" %}
+        <h2>Twoje wydarzenia</h2>
+        <hr class="section-divider">
+        {% if enrolled_events %}
+          <div class="event-list">
+            {% for event in enrolled_events %}
+              <div class="event-card">
+                <div class="event-info">
+                  <i class="fa-solid fa-calendar-day event-icon"></i>
+                  <div class="event-details">
+                    <strong>{{ event.title }}</strong>
+                    <span>{{ event.date }}, {{ event.time }}</span>
+                  </div>
+                </div>
+                <span class="badge">Zapisany</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>Nie zapisałeś się na żadne wydarzenia.</p>
+        {% endif %}
+      {% endif %}
+      <!--dla organizatora -->
+      {% if organizer_events %}
+        <h2>Twoje utworzone wydarzenia</h2>
+        <hr class="section-divider">
         <div class="event-list">
-          {% for event in enrolled_events %}
-            <div class="event-card">
+          {% for event in organizer_events %}
+            <div class="event-card" onclick="openParticipantsModal({{ event.id }})" style="cursor:pointer;">
               <div class="event-info">
-                <i class="fa-solid fa-calendar-day event-icon"></i>
+                <i class="fa-solid fa-calendar-plus event-icon"></i>
                 <div class="event-details">
                   <strong>{{ event.title }}</strong>
-                  <span>{{ event.date }}, {{ event.time }}</span>
+                  <span>{{ event.date }}</span>
                 </div>
               </div>
-              <span class="badge">Zapisany</span>
+              <div class="event-stats">
+                <span class="badge">Zapisani: {{ event.participants_count }}</span>
+                <br><br>
+                <span class="badge">Komentarze: {{ event.comments_count }}</span>
+                <br><br>
+                <span class="badge">Ocena:
+                  {% if event.avg_rating %}
+                    {% with avg=event.avg_rating|floatformat:1 %}
+                      {% for i in "12345" %}
+                        {% if forloop.counter <= event.avg_rating %}
+                          <i class="fa fa-star" style="color:gold"></i>
+                        {% elif forloop.counter0 < event.avg_rating %}
+                          <i class="fa fa-star-half-alt" style="color:gold"></i>
+                        {% else %}
+                          <i class="fa fa-star" style="color:#ccc"></i>
+                        {% endif %}
+                      {% endfor %}
+                    {% endwith %}
+                  {% else %}
+                    Brak ocen
+                  {% endif %}
+                </span>
+                <br><br>
+              </div>
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <p>Nie zapisałeś się na żadne wydarzenia.</p>
+        <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p>
       {% endif %}
     </div>
   </div>
-</div>
-{% endblock %}
+</div> 
 
+<!-- MODAL: Lista uczestników wydarzenia -->
+<div id="participants-modal" class="faq-modal">
+  <div class="faq-modal-backdrop" onclick="closeParticipantsModal()"></div>
+  <div class="faq-modal-content">
+    <button class="faq-modal-close" onclick="closeParticipantsModal()">&times;</button>
+    <h3>Uczestnicy wydarzenia</h3>
+    <div id="participants-list-content">
+      <!-- tutaj zostanie załadowana lista przez AJAX -->
+    </div>
+  </div>
+</div>
+
+{% if admin_answers and is_student or is_organizer %}
+  <div class="important-announcement">
+    <span class="important-dot"></span>
+    <b>Odpowiedź od administratora!</b>
+    <a href="#" onclick="openAnswerModal(); return false;">Zobacz odpowiedź</a>
+  </div>
+{% endif %}
+
+<div id="answer-modal" class="answer-modal">
+  <div class="answer-modal-backdrop" onclick="closeAnswerModal()"></div>
+  <div class="answer-modal-content">
+    <button class="answer-modal-close" onclick="closeAnswerModal()">&times;</button>
+    <h3>Odpowiedź od administratora</h3>
+    {% for msg in admin_answers %}
+      <div class="admin-answer-block">
+        <b>Twoje pytanie:</b> {{ msg.subject }}<br>
+        <b>Treść:</b> {{ msg.message }}<br>
+        <hr>
+        <b>Odpowiedź:</b> {{ msg.answer }}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+function openParticipantsModal(eventId) {
+  // Poprawiona ścieżka AJAX!
+  fetch(`/events/event/${eventId}/participants-ajax/`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('participants-list-content').innerHTML = data.html;
+      document.getElementById('participants-modal').classList.add('active');
+    });
+}
+function closeParticipantsModal() {
+  document.getElementById('participants-modal').classList.remove('active');
+}
+function openAnswerModal() {
+  document.getElementById('answer-modal').classList.add('active');
+}
+function closeAnswerModal() {
+  document.getElementById('answer-modal').classList.remove('active');
+}
+</script>
+
+{% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div class="message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% endblock %}

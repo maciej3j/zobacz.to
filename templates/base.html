@@ -15,6 +15,7 @@
       <a href="{% url 'home' %}">
         <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
       </a>
+      <span class="site-name">zobacz.to</span>
       {% if user.is_authenticated %}
         <span class="username">Witaj, {{ user.username }}</span>
       {% endif %}
@@ -24,7 +25,7 @@
         <i class="fas fa-calendar-alt"></i>
         <span class="label">Wydarzenia</span>
       </a>
-      <a href="#">
+      <a href="{% url 'profile' %}">
         <i class="fas fa-user"></i>
         <span class="label">Profil</span>
       </a>
@@ -52,7 +53,7 @@
         <i class="fas fa-cog"></i>
         <span class="label">Ustawienia</span>
       </a>
-      <a href="#">
+      <a href="{% url 'contact' %}">
         <i class="fas fa-info-circle"></i>
         <span class="label">Kontakt</span>
       </a>

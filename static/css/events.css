@@ -53,24 +53,55 @@
     color: #555;
 }
 
+.event-list-scroll {
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
 .event-list {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .event-item {
-    border-bottom: 1px solid #e0e0e0;
-    padding: 15px 0;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 18px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid #f0f0f0;
 }
 
 .event-title {
     font-size: 18px;
-    margin: 0 0 5px 0;
+    font-weight: bold;
+    margin-bottom: 4px;
 }
 
-.event-empty {
-    text-align: center;
+.event-meta {
     color: #888;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.event-actions {
+    margin-top: 6px;
+}
+
+.event-detail-link {
+    color: #2b7cff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.event-detail-link:hover {
+    color: #1e5ed0;
 }
 
 /*przycisk BUTTON przekierowujący do strony z dodawaniem wydarzeń*/
@@ -88,4 +119,15 @@
 
 .add-event-button:hover {
     background-color: #218838;
+}
+
+.filter-sort-block {
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    padding: 18px 20px 10px 20px;
+    margin-bottom: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
