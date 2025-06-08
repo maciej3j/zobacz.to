@@ -1,0 +1,7 @@
+<ul class="participants-list">
+  {% for enrollment in enrollments %}
+    <li>{{ enrollment.user.username }} ({{ enrollment.user.email }})</li>
+  {% empty %}
+    <li>Brak uczestników.</li>
+  {% endfor %}
+</ul>

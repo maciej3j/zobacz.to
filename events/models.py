@@ -74,3 +74,20 @@ class Announcement(models.Model):
 
     def __str__(self):
         return self.title
+
+class ContactMessage(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_answered = models.BooleanField(default=False)
+    answer = models.TextField(blank=True, null=True)
+
+class FAQ(models.Model):
+    question = models.CharField(max_length=300, verbose_name="Pytanie")
+    answer = models.TextField(verbose_name="Odpowiedź")
+
+    def __str__(self):
+        return self.question
