@@ -1,6 +1,3 @@
-:root {
-  --main-purple: #4a3aff;
-}
 .contact-faq-flex {
   display: flex;
   gap: 24px;
@@ -25,60 +22,6 @@
 }
 .faq-box li {
   margin-bottom: 10px;
-}
-.faq-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.faq-item {
-  margin-bottom: 10px;
-}
-.faq-question {
-  width: 100%;
-  background: none;
-  border: none;
-  font-size: 1em;
-  text-align: left;
-  padding: 8px 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: 600;
-}
-.faq-arrow {
-  transition: transform 0.2s;
-  margin-left: 8px;
-}
-.faq-answer {
-  padding: 8px 0 8px 16px;
-  color: #444;
-  background: #f8f9fa;
-  border-radius: 6px;
-  margin-top: 2px;
-}
-.faq-more-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 14px;
-  color: var(--main-purple);
-  font-weight: 600;
-  background: #f3f1ff;
-  border: none;
-  border-radius: 7px;
-  padding: 8px 18px;
-  font-size: 1em;
-  cursor: pointer;
-  text-decoration: none;
-  box-shadow: 0 1px 6px rgba(30,30,60,0.07);
-  transition: background 0.18s, color 0.18s;
-}
-.faq-more-link:hover {
-  background: #e7e3ff;
-  color: #3726d3;
-  text-decoration: none;
 }
 
 /* Modal FAQ */
@@ -124,8 +67,8 @@
 }
 .faq-modal-scroll {
   overflow-y: auto;
-  max-height: 50vh;
-  padding-right: 8px;
+  max-height: 48vh;
+  margin-top: 18px;
 }
 .faq-modal-scroll ul {
   padding-left: 18px;
@@ -197,26 +140,11 @@
   color: #888;
   cursor: pointer;
 }
-.admin-answers-section {
-  margin-top: 48px;
-  padding: 24px 18px;
-  background: #f9f9ff;
-  border-radius: 12px;
-  border: 1.5px solid #e0e0f0;
-}
-.admin-answers-title {
-  font-size: 1.2em;
-  margin-bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 .admin-answer-block {
   margin-bottom: 18px;
   background: #f8f9fa;
   border-radius: 8px;
   padding: 16px 18px;
-  border: 1px solid #e0e0e0;
 }
 .messages {
   margin-bottom: 18px;
@@ -236,66 +164,4 @@
   background: #ffeaea;
   color: #c00;
   border: 1px solid #f5bcbc;
-}
-.contact-form-block {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 2px 16px rgba(30,30,60,0.07);
-  padding: 32px 28px 24px 28px;
-  margin-bottom: 24px;
-  min-width: 320px;
-  max-width: 480px;
-  width: 100%;
-}
-.contact-form-block h3 {
-  font-size: 1.25em;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.contact-form-block .form-group {
-  margin-bottom: 18px;
-}
-.contact-form-block label {
-  font-weight: 600;
-  margin-bottom: 4px;
-  display: block;
-}
-.contact-form-block input,
-.contact-form-block textarea {
-  width: 100%;
-  border: 1px solid #e0e0e0;
-  border-radius: 7px;
-  padding: 10px 12px;
-  font-size: 1em;
-  margin-top: 2px;
-  background: #fafbff;
-  transition: border 0.2s;
-}
-.contact-form-block input:focus,
-.contact-form-block textarea:focus {
-  border: 1.5px solid #4a3aff;
-  outline: none;
-  background: #fff;
-}
-.filter-button {
-  background: #4a3aff;
-  color: #fff;
-  border: none;
-  border-radius: 7px;
-  padding: 10px 22px;
-  font-size: 1em;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 8px;
-  box-shadow: 0 1px 6px rgba(30,30,60,0.07);
-}
-.filter-button:hover {
-  background: #3726d3;
-}
-h2, .contact-form-block h3, .faq-box h4, .admin-answers-title {
-  color: var(--main-purple);
-  font-weight: 700;
 }
