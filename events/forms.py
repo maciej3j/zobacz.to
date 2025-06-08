@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event, EventComment, Announcement
+from .models import Event, EventComment, Announcement, ContactMessage
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -22,3 +22,19 @@ class AnnouncementForm(forms.ModelForm):
     class Meta:
         model = Announcement
         fields = ['title', 'content', 'category']
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ['name', 'email', 'subject', 'message']
+        widgets = {
+            'message': forms.Textarea(attrs={'rows': 4}),
+        }
+
+class ContactAnswerForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ['answer']
+        widgets = {
+            'answer': forms.Textarea(attrs={'rows': 2}),
+        }
