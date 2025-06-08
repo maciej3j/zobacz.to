@@ -24,6 +24,17 @@
                 {% endfor %}
             </ul>
             {% endif %}
+            <div class="form-group">
+                {{ form.first_name.label_tag }}
+                {{ form.first_name }}
+                {{ form.first_name.errors }}
+            </div>
+
+            <div class="form-group">
+                {{ form.last_name.label_tag }}
+                {{ form.last_name }}
+                {{ form.last_name.errors }}
+            </div>
 
             <div class="form-group">
                 {{ form.username.label_tag }}

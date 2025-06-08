@@ -1,4 +1,12 @@
 from django import forms
+from .models import UserProfile
+from .models import Event, EventComment, Announcement
+from django.contrib.auth.models import User
+
+class PersonalDataForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
 from .models import Event, EventComment, Announcement, ContactMessage
 
 class EventForm(forms.ModelForm):
@@ -23,6 +31,10 @@ class AnnouncementForm(forms.ModelForm):
         model = Announcement
         fields = ['title', 'content', 'category']
 
+class AcademicDataForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['university', 'faculty', 'field_of_study', 'study_year', 'main_discipline', 'interests']
 class ContactForm(forms.ModelForm):
     class Meta:
         model = ContactMessage

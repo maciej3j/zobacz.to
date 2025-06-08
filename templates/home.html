@@ -9,43 +9,41 @@
   <div class="home-flex full-height">
     <!-- Lewa kolumna: Aktualności i ogłoszenia -->
     <div class="home-left flat">
-  <div class="home-left-content">
-    <h2>Aktualności i ogłoszenia</h2>
-    <hr class="section-divider">
-    {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
-      <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
-    {% endif %}
-    <div class="announcement-list">
-      {% if announcements %}
-        {% for ann in announcements %}
-          <div class="announcement-card {{ ann.category }}">
-            <div class="announcement-icon">
-              <i class="{{ ann.icon }}"></i>
-            </div>
-            <div class="announcement-text">
-              <h3>{{ ann.title }}</h3>
-              <p>{{ ann.content }}</p>
-              <span class="meta">{{ ann.category_display }} • {{ ann.created_at }}</span>
-            </div>
-            {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
-              <form method="post" action="{% url 'delete_announcement' ann.id %}" style="margin-left:auto;">
-                {% csrf_token %}
-                <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to ogłoszenie?');">Usuń</button>
-              </form>
-            {% endif %}
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>Brak ogłoszeń.</p>
-      {% endif %}
+      <div class="home-left-content">
+        <h2>Aktualności i ogłoszenia</h2>
+        <hr class="section-divider">
+        {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+          <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
+        {% endif %}
+        <div class="announcement-list">
+          {% if announcements %}
+            {% for ann in announcements %}
+              <div class="announcement-card {{ ann.category }}">
+                <div class="announcement-icon">
+                  <i class="{{ ann.icon }}"></i>
+                </div>
+                <div class="announcement-text">
+                  <h3>{{ ann.title }}</h3>
+                  <p>{{ ann.content }}</p>
+                  <span class="meta">{{ ann.category_display }} • {{ ann.created_at }}</span>
+                </div>
+                {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+                  <form method="post" action="{% url 'delete_announcement' ann.id %}" style="margin-left:auto;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to ogłoszenie?');">Usuń</button>
+                  </form>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <p>Brak ogłoszeń.</p>
+          {% endif %}
+        </div>
+      </div>
+      <footer class="site-footer">
+        <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
+      </footer>
     </div>
-  </div>
-
-  <footer class="site-footer">
-    <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
-  </footer>
-</div>
-
 
     <!-- Prawa kolumna: Nadchodzące wydarzenia -->
     <div class="home-right flat">
@@ -75,50 +73,61 @@
       {% if organizer_events %}
         <h2>Twoje utworzone wydarzenia</h2>
         <hr class="section-divider">
-        {% if organizer_events %}
-          <div class="event-list">
-            {% for event in organizer_events %}
-              <div class="event-card">
-                <div class="event-info">
-                  <i class="fa-solid fa-calendar-plus event-icon"></i>
-                  <div class="event-details">
-                    <strong>{{ event.title }}</strong>
-                    <span>{{ event.date }}</span>
-                  </div>
-                </div>
-                <div class="event-stats">
-                  <span class="badge">Zapisani: {{ event.participants_count }}</span>
-                  <br><br>
-                  <span class="badge">Komentarze: {{ event.comments_count }}</span>
-                  <br><br>
-                  <span class="badge">Ocena:
-                    {% if event.avg_rating %}
-                      {% with avg=event.avg_rating|floatformat:1 %}
-                        {% for i in "12345" %}
-                          {% if forloop.counter <= event.avg_rating %}
-                            <i class="fa fa-star" style="color:gold"></i>
-                          {% elif forloop.counter0 < event.avg_rating %}
-                            <i class="fa fa-star-half-alt" style="color:gold"></i>
-                          {% else %}
-                            <i class="fa fa-star" style="color:#ccc"></i>
-                          {% endif %}
-                        {% endfor %}
-                      {% endwith %}
-                    {% else %}
-                      Brak ocen
-                    {% endif %}
-                  </span>
+        <div class="event-list">
+          {% for event in organizer_events %}
+            <div class="event-card" onclick="openParticipantsModal({{ event.id }})" style="cursor:pointer;">
+              <div class="event-info">
+                <i class="fa-solid fa-calendar-plus event-icon"></i>
+                <div class="event-details">
+                  <strong>{{ event.title }}</strong>
+                  <span>{{ event.date }}</span>
                 </div>
               </div>
-            {% endfor %}
-          </div>
-        {% else %}
-          <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p>
-        {% endif %}
+              <div class="event-stats">
+                <span class="badge">Zapisani: {{ event.participants_count }}</span>
+                <br><br>
+                <span class="badge">Komentarze: {{ event.comments_count }}</span>
+                <br><br>
+                <span class="badge">Ocena:
+                  {% if event.avg_rating %}
+                    {% with avg=event.avg_rating|floatformat:1 %}
+                      {% for i in "12345" %}
+                        {% if forloop.counter <= event.avg_rating %}
+                          <i class="fa fa-star" style="color:gold"></i>
+                        {% elif forloop.counter0 < event.avg_rating %}
+                          <i class="fa fa-star-half-alt" style="color:gold"></i>
+                        {% else %}
+                          <i class="fa fa-star" style="color:#ccc"></i>
+                        {% endif %}
+                      {% endfor %}
+                    {% endwith %}
+                  {% else %}
+                    Brak ocen
+                  {% endif %}
+                </span>
+                <br><br>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p>
       {% endif %}
     </div>
   </div>
 </div> 
+
+<!-- MODAL: Lista uczestników wydarzenia -->
+<div id="participants-modal" class="faq-modal">
+  <div class="faq-modal-backdrop" onclick="closeParticipantsModal()"></div>
+  <div class="faq-modal-content">
+    <button class="faq-modal-close" onclick="closeParticipantsModal()">&times;</button>
+    <h3>Uczestnicy wydarzenia</h3>
+    <div id="participants-list-content">
+      <!-- tutaj zostanie załadowana lista przez AJAX -->
+    </div>
+  </div>
+</div>
 
 {% if admin_answers and is_student or is_organizer %}
   <div class="important-announcement">
@@ -143,7 +152,20 @@
     {% endfor %}
   </div>
 </div>
+
 <script>
+function openParticipantsModal(eventId) {
+  // Poprawiona ścieżka AJAX!
+  fetch(`/events/event/${eventId}/participants-ajax/`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('participants-list-content').innerHTML = data.html;
+      document.getElementById('participants-modal').classList.add('active');
+    });
+}
+function closeParticipantsModal() {
+  document.getElementById('participants-modal').classList.remove('active');
+}
 function openAnswerModal() {
   document.getElementById('answer-modal').classList.add('active');
 }
@@ -161,4 +183,3 @@ function closeAnswerModal() {
 {% endif %}
 
 {% endblock %}
-

@@ -5,6 +5,8 @@ from django.contrib.auth.models import Group
 from .models import OrganizerRequest
 
 class CustomUserCreationForm(UserCreationForm):
+    first_name = forms.CharField(label="Imię", max_length=25, required=True)
+    last_name = forms.CharField(label="Nazwisko", max_length=25, required=True)
     email = forms.EmailField(required=True, label="Adres e-mail")
     request_organizer = forms.BooleanField(
         required=False,
@@ -13,7 +15,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ("username", "email", "password1", "password2", "request_organizer")
+        fields = ("first_name", "last_name", "username", "email", "password1", "password2", "request_organizer")
 
     def save(self, commit=True):
         user = super().save(commit=False)
