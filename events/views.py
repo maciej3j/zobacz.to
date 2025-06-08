@@ -56,6 +56,7 @@ def add_event(request):
             event = form.save(commit=False)
             event.created_by = request.user
             event.save()
+            messages.success(request, "Wydarzenie zostało dodane pomyślnie!")
             return redirect('events_list')
     else:
         form = EventForm()
@@ -123,64 +124,46 @@ def event_detail(request, event_id):
 @login_required
 def home(request):
     announcements = Announcement.objects.order_by('-created_at')[:5]
-
     admin_answers = []
-    if request.user.groups.filter(name__in=['student', 'organizer']).exists():
-        admin_answers = ContactMessage.objects.filter(
-            user=request.user,
-            answer__isnull=False
-        ).order_by('-created_at')
+    enrolled_events = [] # Initialize
+    organizer_events = [] # Initialize
+    is_student = False # Initialize boolean flags
+    is_organizer = False
 
-    if request.user.groups.filter(name='student').exists():
-        enrolled_events = Event.objects.filter(eventenrollment__user=request.user).order_by('date')
-        context = {
-            'enrolled_events': enrolled_events,
-            'is_student': True,
-            'announcements': announcements,
-            'admin_answers': admin_answers,
-        }
-        return render(request, 'home.html', context)
+    if request.user.is_authenticated:
+        is_student = request.user.groups.filter(name='student').exists()
+        is_organizer = request.user.groups.filter(name='organizer').exists()
 
-    elif request.user.groups.filter(name='organizer').exists():
-        events = Event.objects.filter(created_by=request.user)
-        event_stats = []
+        if is_student or is_organizer: # Only fetch answers if user is student or organizer
+            admin_answers = ContactMessage.objects.filter(
+                user=request.user,
+                answer__isnull=False
+            ).order_by('-created_at')
 
-        for event in events:
-            enrollment_count = EventEnrollment.objects.filter(event=event).count()
-            comment_count = EventComment.objects.filter(event=event).count()
-            avg_rating = EventComment.objects.filter(event=event).aggregate(avg=Avg('rating'))['avg']
-
-            event_stats.append({
-                'event': event,
-                'enrollment_count': enrollment_count,
-                'comment_count': comment_count,
-                'avg_rating': round(avg_rating or 0, 2)
-            })
-
-        organizer_events = (
-            Event.objects.filter(created_by=request.user)
-            .annotate(
-                participants_count=Count('eventenrollment', distinct=True),
-                comments_count=Count('comments', distinct=True),
-                avg_rating=Avg('comments__rating')
+        if is_student:
+            enrolled_events = Event.objects.filter(eventenrollment__user=request.user).order_by('date')
+        
+        if is_organizer:
+            organizer_events = (
+                Event.objects.filter(created_by=request.user)
+                .annotate(
+                    participants_count=Count('eventenrollment', distinct=True),
+                    comments_count=Count('comments', distinct=True),
+                    avg_rating=Avg('comments__rating')
+                )
+                .order_by('date') # Added ordering for consistency
             )
-        )
 
-        context = {
-            'event_stats': event_stats,
-            'is_organizer': True,
-            'announcements': announcements,
-            'organizer_events': organizer_events,
-            'admin_answers': admin_answers,
-        }
-        return render(request, 'home.html', context)
+    context = {
+        'announcements': announcements,
+        'admin_answers': admin_answers,
+        'enrolled_events': enrolled_events, # Always pass
+        'organizer_events': organizer_events, # Always pass
+        'is_student': is_student, # Always pass boolean flags for template logic
+        'is_organizer': is_organizer, # Always pass boolean flags for template logic
+    }
+    return render(request, 'home.html', context)
 
-    else:
-        context = {
-            'announcements': announcements,
-            'admin_answers': admin_answers,
-        }
-        return render(request, 'home.html', context)
 
 @admin_required
 def add_announcement(request):
@@ -190,6 +173,7 @@ def add_announcement(request):
             announcement = form.save(commit=False)
             announcement.author = request.user
             announcement.save()
+            messages.success(request, "Ogłoszenie zostało dodane pomyślnie!")
             return redirect('home')
     else:
         form = AnnouncementForm()
@@ -199,6 +183,7 @@ def add_announcement(request):
 def delete_announcement(request, announcement_id):
     announcement = get_object_or_404(Announcement, id=announcement_id)
     announcement.delete()
+    messages.success(request, "Ogłoszenie zostało usunięte.")
     return redirect('home')
 
 
@@ -262,30 +247,95 @@ def contact(request):
             'faqs': faqs,
             'contact_info': contact_info,
         })
+    else: # For users not in student, organizer, or admin groups
+        messages.error(request, "Nie masz uprawnień, aby wysyłać wiadomości lub przeglądać tę stronę.")
+        return redirect('home') # Redirect to home or login page
 
 @login_required
 def profile(request):
     user = request.user
-    profile = user.userprofile
+    # Ensure user has a profile, create one if not (or handle this in User model creation)
+    try:
+        profile = user.userprofile
+    except AttributeError:
+        # Handle case where user might not have a profile, e.g., create it.
+        # This is a placeholder, you might have specific logic in accounts app
+        from accounts.models import UserProfile
+        profile = UserProfile.objects.create(user=user)
+
+    enrolled_events = [] # Initialize
+    organized_events = [] # Initialize
+    is_student = user.groups.filter(name='student').exists()
+    is_organizer = user.groups.filter(name='organizer').exists()
+
     if request.method == 'POST':
+        personal_form = PersonalDataForm(request.POST, instance=user)
+        academic_form = AcademicDataForm(request.POST, instance=profile)
+
         if 'save_personal' in request.POST:
-            personal_form = PersonalDataForm(request.POST, instance=user)
             if personal_form.is_valid():
                 personal_form.save()
+                messages.success(request, "Dane osobowe zostały zaktualizowane.")
+            else:
+                messages.error(request, "Błąd podczas aktualizacji danych osobowych.")
         elif 'save_academic' in request.POST:
-            academic_form = AcademicDataForm(request.POST, instance=profile)
             if academic_form.is_valid():
                 academic_form.save()
-        return redirect('profile')
+                messages.success(request, "Dane akademickie zostały zaktualizowane.")
+            else:
+                messages.error(request, "Błąd podczas aktualizacji danych akademickich.")
+        
+        # After saving, re-fetch data to ensure updated context
+        # This part ensures that after a POST, the page re-renders with correct data
+        if is_student:
+            enrolled_events = Event.objects.filter(eventenrollment__user=user).order_by('date')
+        if is_organizer:
+            organized_events = (
+                Event.objects.filter(created_by=user)
+                .annotate(
+                    participants_count=Count('eventenrollment', distinct=True),
+                    comments_count=Count('comments', distinct=True),
+                    avg_rating=Avg('comments__rating')
+                )
+                .order_by('date')
+            )
+        
+        return render(request, 'profile.html', {
+            'personal_form': personal_form,
+            'academic_form': academic_form,
+            'enrolled_events': enrolled_events, # Always pass
+            'organized_events': organized_events, # Always pass
+            'is_student': is_student, # Always pass boolean flags for template logic
+            'is_organizer': is_organizer, # Always pass boolean flags for template logic
+        })
 
     personal_form = PersonalDataForm(instance=user)
     academic_form = AcademicDataForm(instance=profile)
 
+    # Populate enrolled_events if user is a student for GET requests
+    if is_student:
+        enrolled_events = Event.objects.filter(eventenrollment__user=user).order_by('date')
+    
+    # Populate organized_events if user is an organizer for GET requests
+    if is_organizer:
+        organized_events = (
+            Event.objects.filter(created_by=user)
+            .annotate(
+                participants_count=Count('eventenrollment', distinct=True),
+                comments_count=Count('comments', distinct=True),
+                avg_rating=Avg('comments__rating')
+            )
+            .order_by('date')
+        )
+
     return render(request, 'profile.html', {
         'personal_form': personal_form,
         'academic_form': academic_form,
+        'enrolled_events': enrolled_events, # Always pass
+        'organized_events': organized_events, # Always pass
+        'is_student': is_student, # Always pass boolean flags for template logic
+        'is_organizer': is_organizer, # Always pass boolean flags for template logic
     })
-    return render(request, 'profile.html')
 
 @login_required
 def event_participants_ajax(request, event_id):
