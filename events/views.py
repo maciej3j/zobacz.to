@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django import forms
+from .forms import PersonalDataForm, AcademicDataForm
 
 class EventListView(ListView):
     model = Event
@@ -181,4 +182,23 @@ def delete_announcement(request, announcement_id):
 
 @login_required
 def profile(request):
-    return render(request, 'profile.html')
+    user = request.user
+    profile = user.userprofile
+    if request.method == 'POST':
+        if 'save_personal' in request.POST:
+            personal_form = PersonalDataForm(request.POST, instance=user)
+            if personal_form.is_valid():
+                personal_form.save()
+        elif 'save_academic' in request.POST:
+            academic_form = AcademicDataForm(request.POST, instance=profile)
+            if academic_form.is_valid():
+                academic_form.save()
+        return redirect('profile')
+
+    personal_form = PersonalDataForm(instance=user)
+    academic_form = AcademicDataForm(instance=profile)
+
+    return render(request, 'profile.html', {
+        'personal_form': personal_form,
+        'academic_form': academic_form,
+    })

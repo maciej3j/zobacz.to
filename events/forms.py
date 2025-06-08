@@ -1,5 +1,12 @@
 from django import forms
+from .models import UserProfile
 from .models import Event, EventComment, Announcement
+from django.contrib.auth.models import User
+
+class PersonalDataForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -22,3 +29,8 @@ class AnnouncementForm(forms.ModelForm):
     class Meta:
         model = Announcement
         fields = ['title', 'content', 'category']
+
+class AcademicDataForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['university', 'faculty', 'field_of_study', 'study_year', 'main_discipline', 'interests']
