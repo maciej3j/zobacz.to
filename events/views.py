@@ -190,7 +190,19 @@ def delete_announcement(request, announcement_id):
 @login_required
 def contact(request):
     user = request.user
-    faqs = FAQ.objects.all()[:5]
+    # Najczęściej zadawane pytania przez użytkowników (po subject)
+    faqs = (
+        ContactMessage.objects
+        .filter(answer__isnull=False)
+        .order_by('-created_at')
+        .values('subject', 'answer')[:3]
+    )
+    all_faqs = (
+        ContactMessage.objects
+        .filter(answer__isnull=False)
+        .order_by('-created_at')
+        .values('subject', 'answer')
+    )
     upcoming_events = Event.objects.filter(date__gte=timezone.now()).order_by('date')[:5]
     contact_info = {
         'email': 'info@zobacz.to',
@@ -226,6 +238,7 @@ def contact(request):
         return render(request, 'contact.html', {
             'form': form,
             'faqs': faqs,
+            'all_faqs': all_faqs,
             'upcoming_events': upcoming_events,
             'contact_info': contact_info,
             'admin_answers': admin_answers,
