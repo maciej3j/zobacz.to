@@ -11,4 +11,5 @@ urlpatterns = [
     path('events/<int:event_id>/unenroll/', views.unenroll_from_event, name='unenroll_event'),
     path('kontakt/', views.contact, name='contact'),
     path('profile/', views.profile, name='profile'),
+    path('event/<int:event_id>/participants-ajax/', views.event_participants_ajax, name='event_participants_ajax'),
 ]

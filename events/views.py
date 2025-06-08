@@ -15,6 +15,8 @@ from django import forms
 from .models import FAQ, ContactMessage, Event
 from .forms import ContactForm, ContactAnswerForm
 from django.http import HttpResponseForbidden
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 class EventListView(ListView):
     model = Event
@@ -263,3 +265,13 @@ def contact(request):
 @login_required
 def profile(request):
     return render(request, 'profile.html')
+
+@login_required
+def event_participants_ajax(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    # Tylko organizator-właściciel lub admin może zobaczyć uczestników
+    if event.created_by != request.user and not request.user.groups.filter(name="admin").exists():
+        return JsonResponse({'error': 'Brak uprawnień'}, status=403)
+    enrollments = EventEnrollment.objects.filter(event=event).select_related('user')
+    html = render_to_string('events/participants_list_fragment.html', {'enrollments': enrollments, 'event': event}, request=request)
+    return JsonResponse({'html': html})
