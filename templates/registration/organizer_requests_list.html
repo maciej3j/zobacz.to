@@ -1,28 +1,58 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Prośby o zostanie organizatorem{% endblock %}
-{% block content %}
-<h2>Prośby o zostanie organizatorem</h2>
-<ul>
-    {% for req in requests %}
-        <li>
-            <strong>Użytkownik:</strong> {{ req.user.username }}<br>
-            <strong>Email:</strong> {{ req.email }}<br>
-            <strong>Imię:</strong> {{ req.first_name }}<br>
-            <strong>Nazwisko:</strong> {{ req.last_name }}<br>
-            <strong>Nazwa uczelni:</strong> {{ req.university }}<br>
-            <strong>Kierunek:</strong> {{ req.field_of_study }}<br>
-            <strong>Data zgłoszenia:</strong> {{ req.created_at }}<br>
-            <form method="post" action="{% url 'approve_organizer_request' req.id %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">Zatwierdź</button>
-            </form>
-            <form method="post" action="{% url 'reject_organizer_request' req.id %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">Odrzuć</button>
-            </form>
-        </li>
-    {% empty %}
-        <li>Brak oczekujących próśb.</li>
-    {% endfor %}
-</ul>
+
+{# Link do nowego pliku CSS #}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/organizer_requests_list.css' %}">
 {% endblock %}
+
+{% block content %}
+{# Dodana klasa 'organizer-requests-page' do main-content dla zmiany tła #}
+<div class="main-content no-header organizer-requests-page">
+  <div class="home-flex single-column-flex"> {# Użyj klasy single-column-flex dla wyśrodkowania #}
+    <div class="home-left flat"> {# Użyj home-left lub home-right, ważne że jest "flat" #}
+      <div class="home-left-content">
+        <h2>Prośby o zostanie organizatorem</h2>
+        <hr class="section-divider"> {# Użyj standardowej linii rozdzielającej #}
+
+        <div class="section-box"> {# Opakuj listę w section-box dla spójnego wyglądu #}
+          {% if requests %}
+            <ul class="request-list">
+              {% for req in requests %}
+                <li class="request-card">
+                  <div class="request-info">
+                    <div class="request-info-item"><strong>Użytkownik:</strong> <span>{{ req.user.username }}</span></div>
+                    <div class="request-info-item"><strong>Email:</strong> <span>{{ req.email }}</span></div>
+                    <div class="request-info-item"><strong>Imię:</strong> <span>{{ req.first_name }}</span></div>
+                    <div class="request-info-item"><strong>Nazwisko:</strong> <span>{{ req.last_name }}</span></div>
+                    <div class="request-info-item"><strong>Uczelnia:</strong> <span>{{ req.university }}</span></div>
+                    <div class="request-info-item"><strong>Kierunek:</strong> <span>{{ req.field_of_study }}</span></div>
+                    <div class="request-info-item"><strong>Data zgłoszenia:</strong> <span>{{ req.created_at }}</span></div>
+                  </div>
+                  <div class="request-actions">
+                    <form method="post" action="{% url 'approve_organizer_request' req.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-approve">Zatwierdź</button>
+                    </form>
+                    <form method="post" action="{% url 'reject_organizer_request' req.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-reject">Odrzuć</button>
+                    </form>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="request-empty-message">Brak oczekujących próśb o zostanie organizatorem.</p>
+          {% endif %}
+        </div>
+      </div>
+      <footer class="site-footer">
+        <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
+      </footer>
+    </div>
+  </div>
+</div>
+{% endblock content %}
