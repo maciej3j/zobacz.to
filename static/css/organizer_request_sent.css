@@ -1,0 +1,109 @@
+/* Style specyficzne dla strony potwierdzenia wysłania prośby o zostanie organizatorem */
+
+/* Układ dla pojedynczej kolumny w home-flex (wyśrodkowanie) */
+.home-flex.single-column-flex {
+    justify-content: center; /* Wyśrodkuj zawartość w poziomie */
+    align-items: flex-start; /* Zacznij od góry */
+    padding-top: 50px; /* Większy padding u góry, aby centralnie umieścić komunikat */
+    padding-bottom: 50px; /* Padding na dole */
+}
+
+/* Ograniczenie szerokości kolumny komunikatu i dodanie cienia */
+.home-flex.single-column-flex .home-left,
+.home-flex.single-column-flex .home-right {
+    max-width: 700px; /* Optymalna szerokość dla komunikatu */
+    width: 100%; /* Upewnij się, że wypełnia dostępną przestrzeń */
+    margin: 0 auto; /* Wyśrodkuj kolumnę */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Dodaj cień, bo `flat` go usunie */
+    padding: 25px; /* Dodaj padding do section-box */
+    text-align: center; /* Wyśrodkuj tekst wewnątrz */
+}
+
+/* Styl dla nagłówka na stronie potwierdzenia */
+.request-sent-header {
+    color: var(--medium-purple); /* Zmienna z home.css */
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Wyśrodkuj nagłówek z ikoną */
+    gap: 15px; /* Odstęp między ikoną a tekstem */
+}
+
+.request-sent-header i {
+    font-size: 3rem; /* Większa ikona */
+    color: var(--success-green); /* Zielony kolor sukcesu */
+}
+
+/* Styl dla głównej wiadomości */
+.request-sent-message {
+    font-size: 1.15rem;
+    color: var(--text-color); /* Zmienna z home.css */
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* Styl dla przycisku powrotu */
+.back-button {
+    display: inline-block;
+    background-color: var(--medium-purple); /* Zmienna z home.css */
+    color: white;
+    padding: 12px 30px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background-color: var(--blue-purple); /* Zmienna z home.css */
+    transform: translateY(-2px);
+}
+
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1024px) {
+    .home-flex.single-column-flex .home-left,
+    .home-flex.single-column-flex .home-right {
+        max-width: 90%; /* Na tabletach i mniejszych, zajmij więcej szerokości */
+        padding: 20px;
+    }
+    .home-flex.single-column-flex {
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+    .request-sent-header {
+        font-size: 2rem;
+    }
+    .request-sent-header i {
+        font-size: 2.5rem;
+    }
+    .request-sent-message {
+        font-size: 1rem;
+    }
+    .back-button {
+        padding: 10px 25px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-flex.single-column-flex .home-left,
+    .home-flex.single-column-flex .home-right {
+        padding: 15px; /* Mniejszy padding na małych telefonach */
+    }
+    .request-sent-header {
+        font-size: 1.8rem;
+        flex-direction: column; /* Ikona nad tekstem */
+        gap: 10px;
+    }
+    .request-sent-header i {
+        font-size: 2rem;
+    }
+    .request-sent-message {
+        font-size: 0.95rem;
+    }
+}
