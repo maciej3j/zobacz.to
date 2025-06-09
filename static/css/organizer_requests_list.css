@@ -1,0 +1,137 @@
+/* Style specyficzne dla strony z listą próśb o zostanie organizatorem */
+
+/* Układ dla pojedynczej kolumny w home-flex (wyśrodkowanie) */
+.home-flex.single-column-flex {
+    justify-content: center; /* Wyśrodkuj zawartość w poziomie */
+    align-items: flex-start; /* Zacznij od góry */
+    padding-top: 20px; /* Dodaj trochę paddingu u góry */
+    padding-bottom: 20px; /* Dodaj trochę paddingu na dole */
+}
+
+/* Ograniczenie szerokości kolumny listy i dodanie cienia */
+.home-flex.single-column-flex .home-left,
+.home-flex.single-column-flex .home-right {
+    max-width: 800px; /* Optymalna szerokość dla listy próśb */
+    width: 100%; /* Upewnij się, że wypełnia dostępną przestrzeń */
+    margin: 0 auto; /* Wyśrodkuj kolumnę */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Dodaj cień, bo `flat` go usunie */
+    padding: 25px; /* Dodaj padding do section-box */
+}
+
+/* Styl dla listy próśb (<ul>) */
+.request-list {
+    list-style: none; /* Usuń domyślne znaczniki listy */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Odstęp między poszczególnymi prośbami */
+    padding: 0; /* Usuń domyślny padding listy */
+    margin: 0; /* Usuń domyślny margines listy */
+}
+
+/* Styl dla pojedynczej prośby (<li>) - jako kafelek */
+.request-card {
+    background-color: var(--grey-light); /* Jasnoszary kolor tła */
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Odstęp między liniami informacji */
+    border-left: 5px solid var(--medium-purple); /* Fioletowa ramka po lewej */
+}
+
+.request-card strong {
+    color: var(--purple-dark); /* Ciemnofioletowy dla wyróżnienia nagłówków pól */
+    font-size: 0.95rem;
+}
+
+.request-card span {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.request-card .request-info-item {
+    display: flex;
+    gap: 5px;
+    align-items: flex-start;
+}
+
+/* Kontener na przyciski zatwierdź/odrzuć */
+.request-actions {
+    margin-top: 15px; /* Odstęp od informacji o prośbie */
+    display: flex;
+    gap: 10px; /* Odstęp między przyciskami */
+    justify-content: flex-end; /* Przyciski po prawej stronie */
+}
+
+/* Styl dla przycisku Zatwierdź */
+.btn-approve {
+    background-color: lightgreen; /* Zielony kolor sukcesu */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-approve:hover {
+    background-color: #218838; /* Ciemniejszy zielony */
+    transform: translateY(-2px);
+}
+
+/* Styl dla przycisku Odrzuć */
+.btn-reject {
+    background-color: lightcoral; /* Czerwony kolor błędu */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-reject:hover {
+    background-color: #c82333; /* Ciemniejszy czerwony */
+    transform: translateY(-2px);
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1024px) {
+    .home-flex.single-column-flex .home-left,
+    .home-flex.single-column-flex .home-right {
+        max-width: 90%;
+        padding: 20px;
+    }
+    .request-card {
+        padding: 15px;
+    }
+    .request-actions {
+        flex-direction: column; /* Przyciski jeden pod drugim */
+        gap: 8px;
+    }
+    .btn-approve, .btn-reject {
+        width: 100%; /* Przyciski zajmują całą szerokość */
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-flex.single-column-flex .home-left,
+    .home-flex.single-column-flex .home-right {
+        padding: 15px;
+    }
+    .request-card {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    .request-card strong, .request-card span {
+        font-size: 0.9rem;
+    }
+}
