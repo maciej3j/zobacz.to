@@ -4,6 +4,9 @@
 {% block title %}Twój Profil{% endblock %}
 
 {% block content %}
+{# Styles for interests-display, interest-tag, interests-edit, and save-btn are now in profile.css #}
+
+{# Keep .no-header on main-content for the profile page #}
 <div class="main-content no-header">
   <div class="home-flex full-height">
 
@@ -16,74 +19,86 @@
           <p class="profile-desc">Zarządzaj swoimi danymi i preferencjami.</p>
         </div>
 
-        <hr class="section-divider"> <!-- Zmieniono na section-divider, aby pasowało do home.css -->
+        <hr class="section-divider">
 
-        <div class="section-box">
-          <h2 class="section-title"><i class="fas fa-id-card"></i> Dane Osobowe i Logowania</h2>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="first_name">Imię</label>
-              <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" readonly>
+        {# FORMULARZ DANE OSOBOWE I LOGOWANIA #}
+        <form method="post" action="{% url 'profile' %}" id="personal-data-form">
+          {% csrf_token %}
+          <input type="hidden" name="save_personal" value="true"> {# Ukryte pole identyfikujące formularz #}
+          <div class="section-box">
+            <h2 class="section-title"><i class="fas fa-id-card"></i> Dane Osobowe i Logowania</h2>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="id_first_name">Imię</label>
+                <input type="text" id="id_first_name" name="first_name" value="{{ user.first_name }}" readonly>
+              </div>
+              <div class="form-group">
+                <label for="id_last_name">Nazwisko</label>
+                <input type="text" id="id_last_name" name="last_name" value="{{ user.last_name }}" readonly>
+              </div>
+              <div class="form-group full-width">
+                <label for="id_email">Adres e-mail</label>
+                <input type="email" id="id_email" name="email" value="{{ user.email }}" readonly>
+              </div>
+              <div class="form-group full-width">
+                <label for="password">Hasło</label>
+                <div class="password-input-group">
+                  <input type="password" id="password" name="password" value="********" readonly>
+                  <button type="button" class="btn-secondary change-password-btn">Zmień hasło</button>
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="last_name">Nazwisko</label>
-              <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" readonly>
-            </div>
-            <div class="form-group full-width">
-              <label for="email">Adres e-mail</label>
-              <input type="email" id="email" name="email" value="{{ user.email }}" readonly>
-            </div>
-            <div class="form-group full-width">
-              <label for="password">Hasło</label>
-              <div class="password-input-group">
-                <input type="password" id="password" name="password" value="********" readonly>
-                <button type="button" class="btn-secondary change-password-btn">Zmień hasło</button>
+            <button type="submit" class="btn-primary save-btn" data-form-type="personal">Zapisz zmiany (Dane Osobowe)</button>
+          </div>
+        </form>
+
+        {# FORMULARZ INFORMACJE AKADEMICKIE I ZAINTERESOWANIA #}
+        <form method="post" action="{% url 'profile' %}" id="academic-data-form">
+          {% csrf_token %}
+          <input type="hidden" name="save_academic" value="true"> {# Ukryte pole identyfikujące formularz #}
+          <div class="section-box">
+            <h2 class="section-title"><i class="fas fa-university"></i> Informacje Akademickie</h2>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="id_university">Uczelnia</label>
+                <input type="text" id="id_university" name="university" value="{{ academic_form.university.value|default:'' }}" readonly>
+              </div>
+              <div class="form-group">
+                <label for="id_faculty">Wydział</label>
+                <input type="text" id="id_faculty" name="faculty" value="{{ academic_form.faculty.value|default:'' }}" readonly>
+              </div>
+              <div class="form-group">
+                <label for="id_field_of_study">Kierunek studiów</label>
+                <input type="text" id="id_field_of_study" name="field_of_study" value="{{ academic_form.field_of_study.value|default:'' }}" readonly>
+              </div>
+              <div class="form-group">
+                <label for="id_study_year">Rok studiów</label>
+                <input type="number" id="id_study_year" name="study_year" value="{{ academic_form.study_year.value|default:'' }}" min="1" max="7" readonly>
+              </div>
+              <div class="form-group full-width">
+                <label for="id_main_discipline">Główna dyscyplina naukowa</label>
+                <input type="text" id="id_main_discipline" name="main_discipline" value="{{ academic_form.main_discipline.value|default:'' }}" readonly>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="section-box">
-          <h2 class="section-title"><i class="fas fa-university"></i> Informacje Akademickie</h2>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="university">Uczelnia</label>
-              <input type="text" id="university" name="university" value="Politechnika Łódzka" readonly>
+          <div class="section-box">
+            <h2 class="section-title"><i class="fas fa-heart"></i> Moje Zainteresowania</h2>
+            <div class="interests-display" id="interests_display">
+              <!-- Kafelki zainteresowań będą renderowane tutaj przez JS -->
             </div>
-            <div class="form-group">
-              <label for="faculty">Wydział</label>
-              <input type="text" id="faculty" name="faculty" value="Wydział Elektrotechniki, Elektroniki, Informatyki" readonly>
+            <div class="interests-edit" style="display: none;"> {# Ukryte domyślnie #}
+              <input type="text" id="new_interest_input" placeholder="Dodaj nowe zainteresowanie">
+              <button type="button" id="add_interest_btn" class="btn-secondary">Dodaj</button>
             </div>
-            <div class="form-group">
-              <label for="study_field">Kierunek studiów</label>
-              <input type="text" id="study_field" name="study_field" value="Informatyka Stosowana" readonly>
-            </div>
-            <div class="form-group">
-              <label for="study_year">Rok studiów</label>
-              <input type="text" id="study_year" name="study_year" value="3" readonly>
-            </div>
-            <div class="form-group full-width">
-              <label for="main_discipline">Główna dyscyplina naukowa</label>
-              <input type="text" id="main_discipline" name="main_discipline" value="Nauki informatyczno-telekomunikacyjne" readonly>
-            </div>
+            {# To ukryte pole będzie przechowywać zainteresowania jako string do przesłania #}
+            <input type="hidden" name="interests" id="hidden_interests_input" value="{{ academic_form.interests.value|default:'' }}">
           </div>
-        </div>
-
-        <div class="section-box">
-          <h2 class="section-title"><i class="fas fa-heart"></i> Moje Zainteresowania</h2>
-          <div class="interests">
-            <!-- Example tags; these would ideally be dynamic -->
-            <span class="tag">Programowanie</span>
-            <span class="tag">Sztuczna Inteligencja</span>
-            <span class="tag">E-sport</span>
-            <span class="tag">Muzyka Rockowa</span>
-            <span class="tag">Fotografia</span>
-            <span class="tag">Podróże</span>
-          </div>
-        </div>
-
-        <button class="btn-primary" id="edit-profile-btn">Edytuj profil</button>
-        <button class="btn-primary" id="save-profile-btn" style="display: none;">Zapisz zmiany</button>
+          <button type="submit" class="btn-primary save-btn" data-form-type="academic">Zapisz zmiany (Akademickie)</button>
+        </form>
+        
+        {# Globalny przycisk Edytuj profil, który uruchamia tryb edycji #}
+        <button class="btn-primary" id="global-edit-profile-btn">Edytuj profil</button>
       </div>
 
       <!--Footer-->
@@ -94,7 +109,8 @@
 
     <!-- PRAWA KOLUMNA (Twoje wydarzenia) -->
     <div class="home-right flat">
-      {% if user.is_authenticated and user.groups.all.0.name == "student" %}
+      {# Ta sekcja jest zawsze widoczna dla studentów, a jej zawartość zależy od enrolled_events #}
+      {% if user.is_authenticated and is_student %}
         <h2>Twoje wydarzenia</h2>
         <hr class="section-divider">
         {% if enrolled_events %}
@@ -117,17 +133,18 @@
         {% endif %}
       {% endif %}
 
-      {% if organizer_events %}
+      {# Ta sekcja jest widoczna TYLKO dla organizatorów #}
+      {% if user.is_authenticated and is_organizer %}
         <h2>Twoje utworzone wydarzenia</h2>
         <hr class="section-divider">
-        {% if organizer_events %}
+        {% if organized_events %}
           <div class="event-list">
-            {% for event in organizer_events %}
-              <div class="event-card">
+            {% for event in organized_events %}
+              <div class="event-card" onclick="openParticipantsModal({{ event.id }})" style="cursor:pointer;">
                 <div class="event-info">
                   <i class="fa-solid fa-calendar-plus event-icon"></i>
                   <div class="event-details">
-                    <strong>{{ event.title }}</strong>
+                    <strong>{{ event.title }}</strong> 
                     <span>{{ event.date }}</span>
                   </div>
                 </div>
@@ -165,39 +182,146 @@
   </div>
 </div>
 
+<!-- MODAL: Lista uczestników wydarzenia -->
+<div id="participants-modal" class="faq-modal">
+  <div class="faq-modal-backdrop" onclick="closeParticipantsModal()"></div>
+  <div class="faq-modal-content">
+    <button class="faq-modal-close" onclick="closeParticipantsModal()">&times;</button>
+    <h3>Uczestnicy wydarzenia</h3>
+    <div id="participants-list-content">
+      <!-- tutaj zostanie załadowana lista przez AJAX -->
+    </div>
+  </div>
+</div>
+
+
 <script>
+
+function openParticipantsModal(eventId) {
+  // Poprawiona ścieżka AJAX!
+  fetch(`/events/event/${eventId}/participants-ajax/`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('participants-list-content').innerHTML = data.html;
+      document.getElementById('participants-modal').classList.add('active');
+    });
+}
+function closeParticipantsModal() {
+  document.getElementById('participants-modal').classList.remove('active');
+}
+function openAnswerModal() {
+  document.getElementById('answer-modal').classList.add('active');
+}
+function closeAnswerModal() {
+  document.getElementById('answer-modal').classList.remove('active');
+}
+
   document.addEventListener('DOMContentLoaded', function() {
-    const editButton = document.getElementById('edit-profile-btn');
-    const saveButton = document.getElementById('save-profile-btn');
-    const inputs = document.querySelectorAll('.profile-main-content input:not([name="password"])'); // Exclude password from direct edit
+    const globalEditButton = document.getElementById('global-edit-profile-btn');
+    const saveButtons = document.querySelectorAll('.save-btn');
+    const personalInputs = document.querySelectorAll('#personal-data-form input:not([name="password"])');
+    const academicInputs = document.querySelectorAll('#academic-data-form input:not([type="hidden"]), #academic-data-form textarea');
     const changePasswordBtn = document.querySelector('.change-password-btn');
 
-    // Initial state: all inputs are readonly except password, which is special.
-    inputs.forEach(input => input.setAttribute('readonly', 'readonly'));
+    const interestsDisplay = document.getElementById('interests_display');
+    const interestsEditContainer = document.querySelector('.interests-edit');
+    const newInterestInput = document.getElementById('new_interest_input');
+    const addInterestBtn = document.getElementById('add_interest_btn');
+    const hiddenInterestsInput = document.getElementById('hidden_interests_input');
 
-    editButton.addEventListener('click', function () {
-      inputs.forEach(input => {
+    let currentInterests = []; // Tablica do przechowywania aktywnych zainteresowań
+
+    // Funkcja do renderowania kafelków zainteresowań
+    function renderInterests() {
+      interestsDisplay.innerHTML = ''; // Wyczyść obecne kafelki
+      if (currentInterests.length > 0) {
+        currentInterests.forEach(interest => {
+          const tag = document.createElement('span');
+          tag.className = 'interest-tag';
+          tag.textContent = interest;
+
+          // Dodaj przycisk usuwania tylko w trybie edycji
+          // Ten warunek sprawdza, czy przycisk globalEditButton jest ukryty (co oznacza tryb edycji)
+          if (globalEditButton.style.display === 'none') {
+              const removeBtn = document.createElement('button');
+              removeBtn.className = 'remove-tag';
+              removeBtn.textContent = '×';
+              removeBtn.setAttribute('aria-label', 'Usuń zainteresowanie');
+              removeBtn.onclick = () => removeInterest(interest);
+              tag.appendChild(removeBtn);
+          }
+          interestsDisplay.appendChild(tag);
+        });
+      } else {
+          // Display placeholder text if no interests are present and not in edit mode
+          if (globalEditButton.style.display === 'inline-block') {
+              interestsDisplay.innerHTML = '<span style="color: #888;">Brak zainteresowań</span>';
+          }
+      }
+      updateHiddenInterests(); // Zawsze aktualizuj ukryte pole po zmianach
+    }
+
+    // Funkcja do dodawania zainteresowania
+    function addInterest() {
+      const newInterest = newInterestInput.value.trim();
+      if (newInterest && !currentInterests.includes(newInterest)) {
+        currentInterests.push(newInterest);
+        newInterestInput.value = ''; // Wyczyść pole input
+        renderInterests();
+      }
+    }
+
+    // Funkcja do usuwania zainteresowania
+    function removeInterest(interestToRemove) {
+      currentInterests = currentInterests.filter(interest => interest !== interestToRemove);
+      renderInterests();
+    }
+
+    // Funkcja do aktualizowania ukrytego pola input
+    function updateHiddenInterests() {
+      hiddenInterestsInput.value = currentInterests.join(',');
+    }
+
+    // Początkowy stan: wszystkie pola są tylko do odczytu, przyciski zapisu ukryte
+    const initialInterestsString = hiddenInterestsInput.value;
+    if (initialInterestsString) {
+        currentInterests = initialInterestsString.split(',').map(item => item.trim()).filter(item => item !== '');
+    }
+    renderInterests(); // Wyrenderuj początkowe zainteresowania
+
+    personalInputs.forEach(input => input.setAttribute('readonly', 'readonly'));
+    academicInputs.forEach(input => input.setAttribute('readonly', 'readonly'));
+    saveButtons.forEach(button => button.style.display = 'none');
+    globalEditButton.style.display = 'inline-block'; // Upewnij się, że przycisk edycji jest widoczny
+    interestsEditContainer.style.display = 'none'; // Ukryj panel edycji zainteresowań
+
+    globalEditButton.addEventListener('click', function () {
+      personalInputs.forEach(input => input.removeAttribute('readonly'));
+      academicInputs.forEach(input => {
         input.removeAttribute('readonly');
+        if (input.tagName === 'TEXTAREA' || input.tagName === 'INPUT') {
+          input.style.backgroundColor = '#fcfcff';
+          input.style.borderColor = '#d0d0e0';
+        }
       });
-      editButton.style.display = 'none';
-      saveButton.style.display = 'inline-block';
+
+      globalEditButton.style.display = 'none';
+      saveButtons.forEach(button => button.style.display = 'inline-block');
+      interestsEditContainer.style.display = 'flex'; // Pokaż panel edycji zainteresowań
+      renderInterests(); // Przeładuj kafelki, aby pokazać przyciski usuwania
     });
 
-    saveButton.addEventListener('click', function() {
-      // In a real application, you would send this data to a server
-      // For demonstration, we just disable inputs again.
-      inputs.forEach(input => {
-        input.setAttribute('readonly', 'readonly');
-      });
-      saveButton.style.display = 'none';
-      editButton.style.display = 'inline-block';
-      // Here you would typically send an AJAX request to save the data
-      console.log('Profile saved!');
+    // Obsługa przycisku "Dodaj" dla zainteresowań
+    addInterestBtn.addEventListener('click', addInterest);
+    newInterestInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addInterest();
+      }
     });
 
+    // Obsługa zmiany hasła - modal
     changePasswordBtn.addEventListener('click', function() {
-      // In a real application, this would open a modal or redirect to a password change page
-      // Using a custom modal is recommended instead of alert()
       const message = 'Funkcja zmiany hasła zostanie zaimplementowana w przyszłości.';
       const modal = document.createElement('div');
       modal.style.cssText = `
@@ -227,7 +351,11 @@
       `;
       document.body.appendChild(modal);
     });
+
+    // Obsługa przesyłania formularzy - upewnij się, że ukryte pole jest aktualne
+    document.getElementById('academic-data-form').addEventListener('submit', function() {
+      updateHiddenInterests();
+    });
   });
 </script>
 {% endblock %}
-```

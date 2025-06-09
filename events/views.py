@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django import forms
-from .forms import PersonalDataForm, AcademicDataForm
+from .forms import PersonalDataForm, AcademicDataForm # Upewnij się, że AcademicDataForm zawiera 'interests'
 from .models import FAQ, ContactMessage, Event
 from .forms import ContactForm, ContactAnswerForm
 from django.http import HttpResponseForbidden
@@ -52,7 +52,7 @@ class EventListView(ListView):
 @organizer_required
 def add_event(request):
     if request.method == 'POST':
-        form = EventForm(request.POST)
+        form = EventForm(request.POST, request.FILES)  # dodaj request.FILES
         if form.is_valid():
             event = form.save(commit=False)
             event.created_by = request.user
@@ -121,7 +121,6 @@ def event_detail(request, event_id):
         'avg_rating': round(avg_rating or 0, 2),  
     })
 
-
 @login_required
 def home(request):
     announcements = Announcement.objects.order_by('-created_at')[:5]
@@ -130,10 +129,12 @@ def home(request):
     organizer_events = [] # Initialize
     is_student = False # Initialize boolean flags
     is_organizer = False
+    is_admin = False # Initialize is_admin flag
 
     if request.user.is_authenticated:
         is_student = request.user.groups.filter(name='student').exists()
         is_organizer = request.user.groups.filter(name='organizer').exists()
+        is_admin = request.user.groups.filter(name='admin').exists() # Set is_admin flag
 
         if is_student or is_organizer: # Only fetch answers if user is student or organizer
             admin_answers = ContactMessage.objects.filter(
@@ -162,9 +163,9 @@ def home(request):
         'organizer_events': organizer_events, # Always pass
         'is_student': is_student, # Always pass boolean flags for template logic
         'is_organizer': is_organizer, # Always pass boolean flags for template logic
+        'is_admin': is_admin, # Pass the new is_admin flag
     }
     return render(request, 'home.html', context)
-
 
 @admin_required
 def add_announcement(request):
@@ -191,19 +192,7 @@ def delete_announcement(request, announcement_id):
 @login_required
 def contact(request):
     user = request.user
-    # Najczęściej zadawane pytania przez użytkowników (po subject)
-    faqs = (
-        ContactMessage.objects
-        .filter(answer__isnull=False)
-        .order_by('-created_at')
-        .values('subject', 'answer')[:3]
-    )
-    all_faqs = (
-        ContactMessage.objects
-        .filter(answer__isnull=False)
-        .order_by('-created_at')
-        .values('subject', 'answer')
-    )
+    faqs = FAQ.objects.all()[:5]
     upcoming_events = Event.objects.filter(date__gte=timezone.now()).order_by('date')[:5]
     contact_info = {
         'email': 'info@zobacz.to',
@@ -215,9 +204,9 @@ def contact(request):
         user=user,
         answer__isnull=False
     ).order_by('-created_at')
-
     is_student = user.groups.filter(name='student').exists()
     is_organizer = user.groups.filter(name='organizer').exists()
+    is_admin = user.groups.filter(name='admin').exists() # Added for consistency
 
     if is_student or is_organizer:
         if request.method == 'POST':
@@ -239,12 +228,12 @@ def contact(request):
         return render(request, 'contact.html', {
             'form': form,
             'faqs': faqs,
-            'all_faqs': all_faqs,
             'upcoming_events': upcoming_events,
             'contact_info': contact_info,
             'admin_answers': admin_answers,
             'is_student': is_student,
             'is_organizer': is_organizer,
+            'is_admin': is_admin, # Pass to contact template
         })
 
     elif user.groups.filter(name='admin').exists():
@@ -260,6 +249,7 @@ def contact(request):
             'messages_list': messages_list,
             'faqs': faqs,
             'contact_info': contact_info,
+            'is_admin': is_admin, # Pass to contact_admin template
         })
     else: # For users not in student, organizer, or admin groups
         messages.error(request, "Nie masz uprawnień, aby wysyłać wiadomości lub przeglądać tę stronę.")
@@ -271,30 +261,36 @@ def profile(request):
 
     try:
         profile = user.userprofile
-    except UserProfile.DoesNotExist:
+    except AttributeError:
+        # Handle case where user might not have a profile, e.g., create it.
+        # This is a placeholder, you might have specific logic in accounts app
+        from accounts.models import UserProfile # assuming UserProfile is in accounts.models
         profile = UserProfile.objects.create(user=user)
 
     enrolled_events = [] # Initialize
     organized_events = [] # Initialize
     is_student = user.groups.filter(name='student').exists()
     is_organizer = user.groups.filter(name='organizer').exists()
+    is_admin = user.groups.filter(name='admin').exists() # Set is_admin flag
 
     if request.method == 'POST':
-        personal_form = PersonalDataForm(request.POST, instance=user)
-        academic_form = AcademicDataForm(request.POST, instance=profile)
-
+        # Handle personal data form submission
         if 'save_personal' in request.POST:
+            personal_form = PersonalDataForm(request.POST, instance=user)
             if personal_form.is_valid():
                 personal_form.save()
                 messages.success(request, "Dane osobowe zostały zaktualizowane.")
             else:
                 messages.error(request, "Błąd podczas aktualizacji danych osobowych.")
+        
+        # Handle academic and interests data form submission
         elif 'save_academic' in request.POST:
+            academic_form = AcademicDataForm(request.POST, instance=profile)
             if academic_form.is_valid():
                 academic_form.save()
-                messages.success(request, "Dane akademickie zostały zaktualizowane.")
+                messages.success(request, "Dane akademickie i zainteresowania zostały zaktualizowane.")
             else:
-                messages.error(request, "Błąd podczas aktualizacji danych akademickich.")
+                messages.error(request, "Błąd podczas aktualizacji danych akademickich i zainteresowań.")
         
         # After saving, re-fetch data to ensure updated context
         # This part ensures that after a POST, the page re-renders with correct data
@@ -311,6 +307,10 @@ def profile(request):
                 .order_by('date')
             )
         
+        # Re-initialize forms for the next render (after POST)
+        personal_form = PersonalDataForm(instance=user)
+        academic_form = AcademicDataForm(instance=profile)
+
         return render(request, 'profile.html', {
             'personal_form': personal_form,
             'academic_form': academic_form,
@@ -318,8 +318,10 @@ def profile(request):
             'organized_events': organized_events, # Always pass
             'is_student': is_student, # Always pass boolean flags for template logic
             'is_organizer': is_organizer, # Always pass boolean flags for template logic
+            'is_admin': is_admin, # Pass the new is_admin flag
         })
 
+    # For GET requests, initialize forms with current instance data
     personal_form = PersonalDataForm(instance=user)
     academic_form = AcademicDataForm(instance=profile)
 
@@ -346,6 +348,7 @@ def profile(request):
         'organized_events': organized_events, # Always pass
         'is_student': is_student, # Always pass boolean flags for template logic
         'is_organizer': is_organizer, # Always pass boolean flags for template logic
+        'is_admin': is_admin, # Pass the new is_admin flag
     })
 
 @login_required

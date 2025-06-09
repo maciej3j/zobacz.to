@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 :root {
   --main-purple: #4a3aff;
 }
 
 /* --- UKŁAD GŁÓWNY --- */
+=======
+>>>>>>> 48a4fb8b940dedb9c54fbb6d78722785f762f897
 .contact-faq-flex {
   display: flex;
   flex-wrap: wrap;
@@ -220,8 +223,8 @@
 }
 .faq-modal-scroll {
   overflow-y: auto;
-  max-height: 50vh;
-  padding-right: 8px;
+  max-height: 48vh;
+  margin-top: 18px;
 }
 .faq-modal-scroll ul {
   padding-left: 18px;

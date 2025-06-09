@@ -69,7 +69,7 @@
       </footer>
     </div>
 
-    <!-- Prawa kolumna: Nadchodzące wydarzenia -->
+    <!-- PRAWA KOLUMNA (Twoje wydarzenia) -->
     <div class="home-right flat">
       {% if user.is_authenticated and user.groups.all.0.name == "student" %}
         <h2>Twoje wydarzenia</h2>
@@ -93,49 +93,50 @@
           <p>Nie zapisałeś się na żadne wydarzenia.</p>
         {% endif %}
       {% endif %}
-      <!--dla organizatora -->
+
       {% if organizer_events %}
         <h2>Twoje utworzone wydarzenia</h2>
         <hr class="section-divider">
-        <div class="event-list">
-          {% for event in organizer_events %}
-            <div class="event-card" onclick="openParticipantsModal({{ event.id }})" style="cursor:pointer;">
-              <div class="event-info">
-                <i class="fa-solid fa-calendar-plus event-icon"></i>
-                <div class="event-details">
-                  <strong>{{ event.title }}</strong>
-                  <span>{{ event.date }}</span>
+        {% if organizer_events %}
+          <div class="event-list">
+            {% for event in organizer_events %}
+              <div class="event-card" onclick="openParticipantsModal({{ event.id }})" style="cursor:pointer;">
+                <div class="event-info">
+                  <i class="fa-solid fa-calendar-plus event-icon"></i>
+                  <div class="event-details">
+                    <strong>{{ event.title }}</strong>
+                    <span>{{ event.date }}</span>
+                  </div>
+                </div>
+                <div class="event-stats">
+                  <span class="badge">Zapisani: {{ event.participants_count }}</span>
+                  <br><br>
+                  <span class="badge">Komentarze: {{ event.comments_count }}</span>
+                  <br><br>
+                  <span class="badge">Ocena:
+                    {% if event.avg_rating %}
+                      {% with avg=event.avg_rating|floatformat:1 %}
+                        {% for i in "12345" %}
+                          {% if forloop.counter <= event.avg_rating %}
+                            <i class="fa fa-star" style="color:gold"></i>
+                          {% elif forloop.counter0 < event.avg_rating %}
+                            <i class="fa fa-star-half-alt" style="color:gold"></i>
+                          {% else %}
+                            <i class="fa fa-star" style="color:#ccc"></i>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
+                    {% else %}
+                      Brak ocen
+                    {% endif %}
+                  </span>
                 </div>
               </div>
-              <div class="event-stats">
-                <span class="badge">Zapisani: {{ event.participants_count }}</span>
-                <br><br>
-                <span class="badge">Komentarze: {{ event.comments_count }}</span>
-                <br><br>
-                <span class="badge">Ocena:
-                  {% if event.avg_rating %}
-                    {% with avg=event.avg_rating|floatformat:1 %}
-                      {% for i in "12345" %}
-                        {% if forloop.counter <= event.avg_rating %}
-                          <i class="fa fa-star" style="color:gold"></i>
-                        {% elif forloop.counter0 < event.avg_rating %}
-                          <i class="fa fa-star-half-alt" style="color:gold"></i>
-                        {% else %}
-                          <i class="fa fa-star" style="color:#ccc"></i>
-                        {% endif %}
-                      {% endfor %}
-                    {% endwith %}
-                  {% else %}
-                    Brak ocen
-                  {% endif %}
-                </span>
-                <br><br>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p>
+        {% endif %}
       {% endif %}
     </div>
   </div>
