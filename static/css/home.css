@@ -181,7 +181,7 @@ body {
   background: var(--white);
   padding: 32px;
   height: 100%;
-  overflow: hidden; /* Ważne – blokuje przewijanie całości */
+  overflow: visible; /* Ważne – blokuje przewijanie całości */
   margin: 0;
 }
 

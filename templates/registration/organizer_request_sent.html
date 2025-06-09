@@ -1,5 +1,36 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Prośba wysłana{% endblock %}
-{% block content %}
-<p>Twoja prośba została wysłana do administratora.</p>
+
+{# Link do nowego pliku CSS #}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/organizer_request_sent.css' %}">
 {% endblock %}
+
+{% block content %}
+<div class="main-content no-header">
+  <div class="home-flex single-column-flex"> {# Klasa single-column-flex dla wyśrodkowania #}
+    <div class="home-left flat"> {# Możesz użyć home-left lub home-right, ważne że jest "flat" #}
+      <div class="home-left-content">
+        <div class="section-box"> {# Opakuj cały komunikat w section-box #}
+          <h2 class="request-sent-header">
+            <i class="fas fa-check-circle"></i> Prośba wysłana pomyślnie!
+          </h2>
+          <hr class="section-divider"> {# Użyj standardowej linii rozdzielającej #}
+          
+          <p class="request-sent-message">
+            Twoja prośba o dołączenie do grona organizatorów wydarzeń została pomyślnie wysłana do administratora. <br>
+            Oczekuj na odpowiedź wkrótce! Zostaniesz powiadomiony e-mailem.
+          </p>
+          
+          <a href="{% url 'home' %}" class="back-button">Powrót do strony głównej</a>
+        </div>
+      </div>
+      <footer class="site-footer">
+        <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
+      </footer>
+    </div>
+  </div>
+</div>
+{% endblock content %}

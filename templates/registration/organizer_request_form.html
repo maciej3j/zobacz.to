@@ -1,11 +1,57 @@
 {% extends "base.html" %}
-{% block title %}Prośba o zostanie organizatorem{% endblock %}
-{% block content %}
+{% load static %}
 
-<h2>Prośba o zostanie organizatorem</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Wyślij prośbę</button>
-</form>
-{% endblock %}
+{% block title %}Prośba o zostanie organizatorem{% endblock %}
+
+{% block content %}
+<div class="main-content no-header">
+  <div class="home-flex single-column-flex"> {# Użyj nowej klasy dla układu jednokolumnowego #}
+    <div class="home-left flat"> {# Możesz użyć home-left lub home-right, ważne że jest "flat" #}
+      <div class="home-left-content">
+        <h2>Prośba o zostanie organizatorem</h2>
+        <hr class="section-divider">
+
+        <div class="section-box"> {# Opakuj formularz w section-box dla spójnego wyglądu #}
+          <p class="form-description">Wypełnij poniższy formularz, aby złożyć prośbę o dołączenie do grona organizatorów wydarzeń. Po przesłaniu Twoja prośba zostanie rozpatrzona przez administratora.</p>
+          
+          <form method="post" class="request-form">
+            {% csrf_token %}
+            
+            {# Wyświetl błędy globalne formularza #}
+            {% if form.non_field_errors %}
+              <div class="form-errors">
+                {% for error in form.non_field_errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {# Wyświetl pola formularza #}
+            {% for field in form %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                  <small class="help-text">{{ field.help_text }}</small>
+                {% endif %}
+                {% if field.errors %}
+                  <div class="field-errors">
+                    {% for error in field.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn-primary">Wyślij prośbę</button>
+          </form>
+        </div>
+      </div>
+      <footer class="site-footer">
+        <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
+      </footer>
+    </div>
+  </div>
+</div>
+{% endblock content %}
