@@ -1,9 +1,6 @@
-<!-- filepath: templates/home.html -->
 {% extends "base.html" %}
 {% load static %}
-
 {% block title %}Zapisz to!{% endblock %}
-
 {% block content %}
 <div class="main-content no-header">
   <div class="home-flex full-height">
@@ -16,6 +13,17 @@
           <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
         {% endif %}
         <div class="announcement-list">
+          {% if admin_answers and is_student or is_organizer %}
+            <div class="announcement-card admin-answer-announcement admin-answer-announcement--red">
+              <div class="announcement-icon">
+                <i class="fa fa-envelope-open-text"></i>
+              </div>
+              <div class="announcement-text">
+                <h3>Odpowiedź od administratora</h3>
+                <a href="#" onclick="openAnswerModal(); return false;" style="font-weight:600;">Zobacz odpowiedź</a>
+              </div>
+            </div>
+          {% endif %}
           {% if announcements %}
             {% for ann in announcements %}
               <div class="announcement-card {{ ann.category }}">
@@ -38,6 +46,22 @@
           {% else %}
             <p>Brak ogłoszeń.</p>
           {% endif %}
+        </div>
+
+        <div id="answer-modal" class="answer-modal">
+          <div class="answer-modal-backdrop" onclick="closeAnswerModal()"></div>
+          <div class="answer-modal-content">
+            <button class="answer-modal-close" onclick="closeAnswerModal()">&times;</button>
+            <h3>Odpowiedź od administratora</h3>
+            {% for msg in admin_answers %}
+              <div class="admin-answer-block">
+                <b>Twoje pytanie:</b> {{ msg.subject }}<br>
+                <b>Treść:</b> {{ msg.message }}<br>
+                <hr>
+                <b>Odpowiedź:</b> {{ msg.answer }}
+              </div>
+            {% endfor %}
+          </div>
         </div>
       </div>
       <footer class="site-footer">
@@ -126,30 +150,6 @@
     <div id="participants-list-content">
       <!-- tutaj zostanie załadowana lista przez AJAX -->
     </div>
-  </div>
-</div>
-
-{% if admin_answers and is_student or is_organizer %}
-  <div class="important-announcement">
-    <span class="important-dot"></span>
-    <b>Odpowiedź od administratora!</b>
-    <a href="#" onclick="openAnswerModal(); return false;">Zobacz odpowiedź</a>
-  </div>
-{% endif %}
-
-<div id="answer-modal" class="answer-modal">
-  <div class="answer-modal-backdrop" onclick="closeAnswerModal()"></div>
-  <div class="answer-modal-content">
-    <button class="answer-modal-close" onclick="closeAnswerModal()">&times;</button>
-    <h3>Odpowiedź od administratora</h3>
-    {% for msg in admin_answers %}
-      <div class="admin-answer-block">
-        <b>Twoje pytanie:</b> {{ msg.subject }}<br>
-        <b>Treść:</b> {{ msg.message }}<br>
-        <hr>
-        <b>Odpowiedź:</b> {{ msg.answer }}
-      </div>
-    {% endfor %}
   </div>
 </div>
 

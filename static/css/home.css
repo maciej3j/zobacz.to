@@ -7,6 +7,11 @@
 }
 
 /* === PODSTAWOWY UKŁAD STRONY === */
+html, body {
+  overflow: hidden !important;
+  height: 100%;
+}
+
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
@@ -45,6 +50,7 @@ body {
     align-items: stretch;
     padding: 0;
     margin: 0;
+    overflow: hidden;
 }
 
 .section-divider {
@@ -181,13 +187,19 @@ body {
   background: var(--white);
   padding: 32px;
   height: 100%;
-  overflow: hidden; /* Ważne – blokuje przewijanie całości */
+  overflow: auto; /* Ważne – blokuje przewijanie całości */
   margin: 0;
+}
+
+.home-left.flat {
+  overflow-y: auto !important;
+  height: 100vh;
+  /* Jeśli masz padding, zostaw go */
 }
 
 .home-left-content {
   flex: 1; /* Wypełnia całą dostępną przestrzeń */
-  overflow-y: auto; /* Przewijalna zawartość */
+  overflow-y: hidden; /* Przewijalna zawartość */
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -262,7 +274,7 @@ body {
     border-radius: 0;
     padding: 32px;
     height: 100%;
-    overflow-y: auto;
+    overflow-y: hidden;
     margin: 0;
 }
 
@@ -346,7 +358,7 @@ body {
     min-width: 320px;
     max-width: 90vw;
     max-height: 80vh;
-    overflow-y: auto;
+    overflow-y: hidden;
     box-shadow: 0 4px 32px rgba(30,94,208,0.15);
     position: relative;
 }
@@ -363,4 +375,32 @@ body {
 }
 .event-card:hover {
   box-shadow: 0 4px 16px rgba(30,94,208,0.15);
+}
+
+.admin-answer-announcement--red {
+  background: #ffeaea;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(200,0,0,0.07);
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+  border-left: 4px solid #e53935;
+}
+
+.admin-answer-announcement--red .announcement-icon {
+  color: #e53935;
+  font-size: 2em;
+  margin-top: 2px;
+}
+
+.admin-answer-announcement--red h3,
+.admin-answer-announcement--red a {
+  color: #111; /* napis czarny */
+}
+
+.main-content, .home-flex, .home-right {
+  overflow: hidden !important;
+  height: 100vh;
 }

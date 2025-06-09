@@ -18,6 +18,7 @@ from .forms import ContactForm, ContactAnswerForm
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from events.models import UserProfile
 
 class EventListView(ListView):
     model = Event
@@ -267,13 +268,10 @@ def contact(request):
 @login_required
 def profile(request):
     user = request.user
-    # Ensure user has a profile, create one if not (or handle this in User model creation)
+
     try:
         profile = user.userprofile
-    except AttributeError:
-        # Handle case where user might not have a profile, e.g., create it.
-        # This is a placeholder, you might have specific logic in accounts app
-        from accounts.models import UserProfile
+    except UserProfile.DoesNotExist:
         profile = UserProfile.objects.create(user=user)
 
     enrolled_events = [] # Initialize
