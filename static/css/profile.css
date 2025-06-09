@@ -85,7 +85,8 @@
     color: #555;
 }
 
-.form-group input {
+.form-group input,
+.form-group textarea { /* Dodano textarea */
     width: 100%;
     padding: 12px 16px;
     font-size: 15px;
@@ -94,16 +95,20 @@
     background-color: #fcfcff;
     margin-bottom: 0;
     box-sizing: border-box;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s; /* Dodano transition dla background-color */
+    resize: vertical; /* Pozwól użytkownikowi zmieniać rozmiar textarea w pionie */
+    min-height: 40px; /* Minimalna wysokość dla textarea */
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group textarea:focus { /* Dodano textarea */
     border-color: var(--medium-purple);
     box-shadow: 0 0 0 2px rgba(88, 61, 156, 0.2);
     outline: none;
 }
 
-.form-group input[readonly] {
+.form-group input[readonly],
+.form-group textarea[readonly] { /* Dodano textarea */
     background-color: #e8e8ed;
     border-color: #d8d8e0;
     cursor: default;
@@ -144,7 +149,8 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn-secondary.change-password-btn {
+.btn-secondary.change-password-btn,
+.btn-secondary { /* General styles for btn-secondary, including add_interest_btn */
     background-color: #6c757d;
     color: white;
     padding: 10px 18px;
@@ -156,23 +162,82 @@
     transition: background-color 0.2s;
 }
 
-.btn-secondary.change-password-btn:hover {
+.btn-secondary.change-password-btn:hover,
+.btn-secondary:hover {
     background-color: #5a6268;
 }
 
-/* Tagi zainteresowań */
-.interests {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+/* === STYLE DLA NOWYCH KAFLKÓW ZAINTERESOWAŃ === */
+.interests-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* Odstęp między kafelkami */
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  min-height: 40px; /* Minimalna wysokość, aby było widać ramkę nawet bez zainteresowań */
+  align-items: center;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
-.interests .tag {
-    background-color: #e0d4f7;
-    color: #4B0082;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    white-space: nowrap;
+.interests-display[readonly] { /* Style for interests display in readonly mode */
+    background-color: #e8e8ed;
+    border-color: #d8d8e0;
+}
+
+
+.interest-tag {
+  background-color: var(--medium-purple); /* Kolor tła kafelka */
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px; /* Zaokrąglone rogi dla wyglądu "tagu" */
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap; /* Zapobiega łamaniu tekstu w kafelku */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Lekki cień na kafelku */
+}
+
+.interest-tag .remove-tag {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1; /* Wyrównuje "x" do środka */
+  padding: 0;
+  margin-left: 4px;
+  transition: color 0.2s, opacity 0.2s; /* Dodano transition dla opacity */
+  opacity: 1; /* Domyślna widoczność */
+}
+
+.interest-tag .remove-tag:hover {
+  color: #ffcccc; /* Czerwony przy najechaniu */
+}
+
+/* Nowe style dla trybu edycji zainteresowań */
+.interests-edit {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  align-items: center;
+}
+
+.interests-edit input[type="text"] {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #d0d0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #fff; /* Białe tło dla edytowalnego inputa */
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+/* Ukryj przyciski zapisu na początku (w JS zmieniamy display na inline-block) */
+.save-btn {
+  margin-top: 20px;
+  display: none; /* Domyślnie ukryte, JavaScript je pokaże */
 }
