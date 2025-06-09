@@ -4,6 +4,7 @@
 {% block title %}Twój Profil{% endblock %}
 
 {% block content %}
+{# Keep .no-header on main-content for the profile page #}
 <div class="main-content no-header">
   <div class="home-flex full-height">
 
@@ -94,7 +95,8 @@
 
     <!-- PRAWA KOLUMNA (Twoje wydarzenia) -->
     <div class="home-right flat">
-      {% if user.is_authenticated and user.groups.all.0.name == "student" %}
+      {# Ta sekcja jest zawsze widoczna dla studentów, a jej zawartość zależy od enrolled_events #}
+      {% if user.is_authenticated and is_student %}
         <h2>Twoje wydarzenia</h2>
         <hr class="section-divider">
         {% if enrolled_events %}
@@ -117,21 +119,24 @@
         {% endif %}
       {% endif %}
 
-      {% if organizer_events %}
+      {# Ta sekcja jest widoczna TYLKO dla organizatorów #}
+      {% if user.is_authenticated and is_organizer %} {# Display this whole section ONLY if user is organizer #}
         <h2>Twoje utworzone wydarzenia</h2>
         <hr class="section-divider">
-        {% if organizer_events %}
+        {% if organized_events %}
           <div class="event-list">
-            {% for event in organizer_events %}
+            {% for event in organized_events %}
+              {# Corrected event property access: event.id, event.title, event.date #}
               <div class="event-card">
                 <div class="event-info">
                   <i class="fa-solid fa-calendar-plus event-icon"></i>
                   <div class="event-details">
-                    <strong>{{ event.title }}</strong>
+                    <strong>{{ event.title }}</strong> 
                     <span>{{ event.date }}</span>
                   </div>
                 </div>
                 <div class="event-stats">
+                  {# Adjusted to access counts directly, assuming organized_events are annotated Event objects #}
                   <span class="badge">Zapisani: {{ event.participants_count }}</span>
                   <br><br>
                   <span class="badge">Komentarze: {{ event.comments_count }}</span>
@@ -158,9 +163,9 @@
             {% endfor %}
           </div>
         {% else %}
-          <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p>
+          <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p> {# This message is now only for organizers who have no events #}
         {% endif %}
-      {% endif %}
+      {% endif %} {# End of is_organizer check for this whole section #}
     </div>
   </div>
 </div>
@@ -229,5 +234,5 @@
     });
   });
 </script>
+
 {% endblock %}
-```

@@ -120,7 +120,6 @@ def event_detail(request, event_id):
         'avg_rating': round(avg_rating or 0, 2),  
     })
 
-
 @login_required
 def home(request):
     announcements = Announcement.objects.order_by('-created_at')[:5]
@@ -129,10 +128,12 @@ def home(request):
     organizer_events = [] # Initialize
     is_student = False # Initialize boolean flags
     is_organizer = False
+    is_admin = False # Initialize is_admin flag
 
     if request.user.is_authenticated:
         is_student = request.user.groups.filter(name='student').exists()
         is_organizer = request.user.groups.filter(name='organizer').exists()
+        is_admin = request.user.groups.filter(name='admin').exists() # Set is_admin flag
 
         if is_student or is_organizer: # Only fetch answers if user is student or organizer
             admin_answers = ContactMessage.objects.filter(
@@ -161,9 +162,9 @@ def home(request):
         'organizer_events': organizer_events, # Always pass
         'is_student': is_student, # Always pass boolean flags for template logic
         'is_organizer': is_organizer, # Always pass boolean flags for template logic
+        'is_admin': is_admin, # Pass the new is_admin flag
     }
     return render(request, 'home.html', context)
-
 
 @admin_required
 def add_announcement(request):
@@ -202,9 +203,9 @@ def contact(request):
         user=user,
         answer__isnull=False
     ).order_by('-created_at')
-
     is_student = user.groups.filter(name='student').exists()
     is_organizer = user.groups.filter(name='organizer').exists()
+    is_admin = user.groups.filter(name='admin').exists() # Added for consistency
 
     if is_student or is_organizer:
         if request.method == 'POST':
@@ -231,6 +232,7 @@ def contact(request):
             'admin_answers': admin_answers,
             'is_student': is_student,
             'is_organizer': is_organizer,
+            'is_admin': is_admin, # Pass to contact template
         })
 
     elif user.groups.filter(name='admin').exists():
@@ -246,6 +248,7 @@ def contact(request):
             'messages_list': messages_list,
             'faqs': faqs,
             'contact_info': contact_info,
+            'is_admin': is_admin, # Pass to contact_admin template
         })
     else: # For users not in student, organizer, or admin groups
         messages.error(request, "Nie masz uprawnień, aby wysyłać wiadomości lub przeglądać tę stronę.")
@@ -260,13 +263,14 @@ def profile(request):
     except AttributeError:
         # Handle case where user might not have a profile, e.g., create it.
         # This is a placeholder, you might have specific logic in accounts app
-        from events.models import UserProfile
+        from accounts.models import UserProfile # assuming UserProfile is in accounts.models
         profile = UserProfile.objects.create(user=user)
 
     enrolled_events = [] # Initialize
     organized_events = [] # Initialize
     is_student = user.groups.filter(name='student').exists()
     is_organizer = user.groups.filter(name='organizer').exists()
+    is_admin = user.groups.filter(name='admin').exists() # Set is_admin flag
 
     if request.method == 'POST':
         personal_form = PersonalDataForm(request.POST, instance=user)
@@ -307,6 +311,7 @@ def profile(request):
             'organized_events': organized_events, # Always pass
             'is_student': is_student, # Always pass boolean flags for template logic
             'is_organizer': is_organizer, # Always pass boolean flags for template logic
+            'is_admin': is_admin, # Pass the new is_admin flag
         })
 
     personal_form = PersonalDataForm(instance=user)
@@ -335,6 +340,7 @@ def profile(request):
         'organized_events': organized_events, # Always pass
         'is_student': is_student, # Always pass boolean flags for template logic
         'is_organizer': is_organizer, # Always pass boolean flags for template logic
+        'is_admin': is_admin, # Pass the new is_admin flag
     })
 
 @login_required
