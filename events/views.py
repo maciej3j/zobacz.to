@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django import forms
-from .forms import PersonalDataForm, AcademicDataForm
+from .forms import PersonalDataForm, AcademicDataForm # Upewnij się, że AcademicDataForm zawiera 'interests'
 from .models import FAQ, ContactMessage, Event
 from .forms import ContactForm, ContactAnswerForm
 from django.http import HttpResponseForbidden
@@ -273,21 +273,23 @@ def profile(request):
     is_admin = user.groups.filter(name='admin').exists() # Set is_admin flag
 
     if request.method == 'POST':
-        personal_form = PersonalDataForm(request.POST, instance=user)
-        academic_form = AcademicDataForm(request.POST, instance=profile)
-
+        # Handle personal data form submission
         if 'save_personal' in request.POST:
+            personal_form = PersonalDataForm(request.POST, instance=user)
             if personal_form.is_valid():
                 personal_form.save()
                 messages.success(request, "Dane osobowe zostały zaktualizowane.")
             else:
                 messages.error(request, "Błąd podczas aktualizacji danych osobowych.")
+        
+        # Handle academic and interests data form submission
         elif 'save_academic' in request.POST:
+            academic_form = AcademicDataForm(request.POST, instance=profile)
             if academic_form.is_valid():
                 academic_form.save()
-                messages.success(request, "Dane akademickie zostały zaktualizowane.")
+                messages.success(request, "Dane akademickie i zainteresowania zostały zaktualizowane.")
             else:
-                messages.error(request, "Błąd podczas aktualizacji danych akademickich.")
+                messages.error(request, "Błąd podczas aktualizacji danych akademickich i zainteresowań.")
         
         # After saving, re-fetch data to ensure updated context
         # This part ensures that after a POST, the page re-renders with correct data
@@ -304,6 +306,10 @@ def profile(request):
                 .order_by('date')
             )
         
+        # Re-initialize forms for the next render (after POST)
+        personal_form = PersonalDataForm(instance=user)
+        academic_form = AcademicDataForm(instance=profile)
+
         return render(request, 'profile.html', {
             'personal_form': personal_form,
             'academic_form': academic_form,
@@ -314,6 +320,7 @@ def profile(request):
             'is_admin': is_admin, # Pass the new is_admin flag
         })
 
+    # For GET requests, initialize forms with current instance data
     personal_form = PersonalDataForm(instance=user)
     academic_form = AcademicDataForm(instance=profile)
 

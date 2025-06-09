@@ -76,7 +76,7 @@
         {% if organizer_events %}
           <div class="event-list">
             {% for event in organizer_events %}
-              <div class="event-card">
+              <div class="event-card" onclick="openParticipantsModal({{ event.id }})" style="cursor:pointer;">
                 <div class="event-info">
                   <i class="fa-solid fa-calendar-plus event-icon"></i>
                   <div class="event-details">
