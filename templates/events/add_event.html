@@ -9,7 +9,7 @@
 <div class="event-form-container">
     <div class="event-form-card">
         <h2>Dodaj nowe wydarzenie</h2>
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% if form.errors %}
             <ul class="form-errors">
@@ -39,6 +39,11 @@
             <div class="form-group">
                 {{ form.description.label_tag }}
                 {{ form.description }}
+            </div>
+
+            <div class="form-group">
+                {{ form.image.label_tag }}
+                {{ form.image }}
             </div>
 
             <button type="submit" class="submit-button">Dodaj wydarzenie</button>

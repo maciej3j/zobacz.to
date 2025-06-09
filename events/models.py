@@ -22,6 +22,7 @@ class Event(models.Model):
     date = models.DateTimeField("Data")
     location = models.CharField("Lokalizacja", max_length=200)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_events")
+    image = models.ImageField(upload_to='event_images/', null=True, blank=True)
 
     def __str__(self):
         return self.title

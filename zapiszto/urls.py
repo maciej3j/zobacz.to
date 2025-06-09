@@ -19,6 +19,8 @@ from django.urls import path, include
 from django.views.generic.base import TemplateView
 from events.views import home
 from events import views as event_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,3 +32,6 @@ urlpatterns = [
     path('delete-announcement/<int:announcement_id>/', event_views.delete_announcement, name='delete_announcement'),
     
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
