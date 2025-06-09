@@ -260,7 +260,7 @@ def profile(request):
     except AttributeError:
         # Handle case where user might not have a profile, e.g., create it.
         # This is a placeholder, you might have specific logic in accounts app
-        from accounts.models import UserProfile
+        from events.models import UserProfile
         profile = UserProfile.objects.create(user=user)
 
     enrolled_events = [] # Initialize

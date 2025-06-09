@@ -12,7 +12,7 @@ body {
     font-family: 'Arial', sans-serif;
     background: linear-gradient(135deg, var(--light-purple), var(--dark-purple));
     height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .main-content {
@@ -23,7 +23,7 @@ body {
     padding: 0;
     margin-left: 250px;
     transition: none;
-    overflow-y: hidden;
+    overflow-y: visible;
     color: #333;
 }
 
