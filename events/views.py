@@ -264,7 +264,6 @@ def profile(request):
     except AttributeError:
         # Handle case where user might not have a profile, e.g., create it.
         # This is a placeholder, you might have specific logic in accounts app
-        from accounts.models import UserProfile # assuming UserProfile is in accounts.models
         profile = UserProfile.objects.create(user=user)
 
     enrolled_events = [] # Initialize
@@ -280,6 +279,7 @@ def profile(request):
             if personal_form.is_valid():
                 personal_form.save()
                 messages.success(request, "Dane osobowe zostały zaktualizowane.")
+                return redirect('profile')
             else:
                 messages.error(request, "Błąd podczas aktualizacji danych osobowych.")
         
