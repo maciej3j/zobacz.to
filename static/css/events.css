@@ -77,19 +77,13 @@
     background: #6d7fa8;
 }
 
-.event-list-scroll {
-    max-height: 60vh;
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
 .event-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-height: 70vh;
-    overflow-y: auto;
-    padding-right: 8px;
+    max-height: none;
+    overflow-y: unset;
+    padding-right: 0;
 }
 
 .event-item {
@@ -221,4 +215,14 @@
 
 .unenroll-button:hover {
     background: #e57373;
+}
+/**nadpisany - na home.css tez jest*/
+.home-left-content {
+    overflow-y: auto;
+    max-height: calc(100vh - 60px); /* dostosuj jeśli masz inny header/footer */
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-right: 8px;
 }
