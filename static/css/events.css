@@ -216,7 +216,7 @@
 .unenroll-button:hover {
     background: #e57373;
 }
-/**nadpisany - na home.css tez jest*/
+/*nadpisany - na home.css tez jest*/
 .home-left-content {
     overflow-y: auto;
     max-height: calc(100vh - 60px); /* dostosuj jeśli masz inny header/footer */

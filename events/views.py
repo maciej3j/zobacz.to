@@ -18,7 +18,7 @@ from .forms import ContactForm, ContactAnswerForm
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from events.models import UserProfile
+from events.models import UserProfile, ContactMessage
 from accounts.models import OrganizerRequest
 
 class EventListView(ListView):
@@ -43,11 +43,31 @@ class EventListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            user_enrollments = EventEnrollment.objects.filter(user=self.request.user).values_list('event_id', flat=True)
+        user = self.request.user
+        if user.is_authenticated:
+            user_enrollments = EventEnrollment.objects.filter(user=user).values_list('event_id', flat=True)
             context['user_enrollments'] = set(user_enrollments)
+            is_organizer = user.groups.filter(name='organizer').exists()
+            context['is_organizer'] = is_organizer
+            if is_organizer:
+                organized_events = (
+                    Event.objects.filter(created_by=user)
+                    .annotate(
+                        participants_count=Count('eventenrollment', distinct=True),
+                        comments_count=Count('comments', distinct=True),
+                        avg_rating=Avg('comments__rating')
+                    )
+                    .order_by('date')
+                )
+                context['organized_events'] = organized_events
         else:
             context['user_enrollments'] = set()
+            context['is_organizer'] = False
+
+        if user.is_authenticated and user.groups.filter(name="admin").exists():
+            context['organizer_requests_count'] = OrganizerRequest.objects.filter(is_reviewed=False).count()
+            context['messages_count'] = ContactMessage.objects.filter(answer__isnull=True).count()
+
         return context
 
 @organizer_required
@@ -365,7 +385,7 @@ def profile(request):
             .order_by('date')
         )
 
-    return render(request, 'profile.html', {
+    context = {
         'personal_form': personal_form,
         'academic_form': academic_form,
         'enrolled_events': enrolled_events, # Always pass
@@ -373,7 +393,13 @@ def profile(request):
         'is_student': is_student, # Always pass boolean flags for template logic
         'is_organizer': is_organizer, # Always pass boolean flags for template logic
         'is_admin': is_admin, # Pass the new is_admin flag
-    })
+    }
+
+    if request.user.is_authenticated and request.user.groups.filter(name="admin").exists():
+        context['organizer_requests_count'] = OrganizerRequest.objects.filter(is_reviewed=False).count()
+        context['messages_count'] = ContactMessage.objects.filter(answer__isnull=True).count()
+
+    return render(request, 'profile.html', context)
 
 @login_required
 def event_participants_ajax(request, event_id):

@@ -86,6 +86,13 @@ class ContactMessage(models.Model):
     is_answered = models.BooleanField(default=False)
     answer = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return f" wiadomość od {self.name} - {self.subject}"
+    
+    @classmethod
+    def unanswered_messages_count(cls):
+        return cls.objects.filter(answer__isnull=True).count()
+
 class FAQ(models.Model):
     question = models.CharField(max_length=300, verbose_name="Pytanie")
     answer = models.TextField(verbose_name="Odpowiedź")

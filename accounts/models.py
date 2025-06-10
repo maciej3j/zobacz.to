@@ -14,3 +14,5 @@ class OrganizerRequest(models.Model):
 
     def __str__(self):
         return f"Prośba o organizatora: {self.user.username}"
+
+OrganizerRequest.objects.filter(is_reviewed=False).count()
