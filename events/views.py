@@ -136,7 +136,7 @@ def unenroll_from_event(request, event_id):
         messages.success(request, "Zrezygnowano z udziału w wydarzeniu.")
     else:
         messages.info(request, "Nie jesteś zapisany na to wydarzenie.")
-    return redirect('event_detail', event_id=event.id)
+    return redirect('events_list')
 
 @login_required
 def event_detail(request, event_id):
