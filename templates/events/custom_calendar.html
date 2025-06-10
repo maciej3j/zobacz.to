@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<style>
+.calendar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.calendar-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.calendar-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.calendar-navigation a {
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    text-decoration: none;
+    border-radius: 4px;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.calendar-navigation a:hover {
+    background-color: #e0e0e0;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: white;
+}
+
+.calendar-table th {
+    background-color: #4a5568;
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #2d3748;
+}
+
+.calendar-table td {
+    width: 14.28%; /* 100% / 7 days */
+    height: 120px;
+    vertical-align: top;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    background-color: #fff;
+}
+
+.calendar-table td:hover {
+    background-color: #f7fafc;
+}
+
+.day-number {
+    font-weight: bold;
+    font-size: 14px;
+    color: #2d3748;
+    margin-bottom: 4px;
+}
+
+.events-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 11px;
+}
+
+.events-list li {
+    margin-bottom: 2px;
+    padding: 2px 4px;
+    background-color: #e6fffa;
+    border-left: 3px solid #38b2ac;
+    border-radius: 2px;
+    line-height: 1.2;
+}
+
+.events-list li:hover {
+    background-color: #b2f5ea;
+}
+
+.events-list a {
+    color: #2c7a7b;
+    text-decoration: none;
+    display: block;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+.events-list a:hover {
+    color: #285e61;
+    text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .calendar-container {
+        padding: 10px;
+    }
+    
+    .calendar-table td {
+        height: 100px;
+        padding: 4px;
+    }
+    
+    .events-list {
+        font-size: 10px;
+    }
+    
+    .calendar-navigation {
+        gap: 8px;
+    }
+    
+    .calendar-navigation a {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-table td {
+        height: 80px;
+        padding: 2px;
+    }
+    
+    .day-number {
+        font-size: 12px;
+    }
+    
+    .events-list {
+        font-size: 9px;
+    }
+}
+</style>
+
+<div class="calendar-container">
+    <div class="calendar-header">
+        <h2>{{ month_name }} {{ year }}</h2>
+    </div>
+    
+    <div class="calendar-navigation">
+        <a href="{% url 'custom-calendar' year=year|add:'-1' month=month %}">&laquo;&laquo; Poprzedni rok</a>
+        <a href="{% url 'custom-calendar' year=year month=month|add:'-1' %}">&laquo; Poprzedni miesiąc</a>
+        <a href="{% url 'custom-calendar' %}">Dziś</a>
+        <a href="{% url 'custom-calendar' year=year month=month|add:'1' %}">Następny miesiąc &raquo;</a>
+        <a href="{% url 'custom-calendar' year=year|add:'1' month=month %}">Następny rok &raquo;&raquo;</a>
+    </div>
+    
+    <table class="calendar-table">
+        <thead>
+            <tr>
+                {% for day_name in day_names %}
+                <th>{{ day_name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            {% for day_data in month_days %}
+                {% if forloop.counter0|divisibleby:7 and not forloop.first %}
+                    </tr><tr>
+                {% endif %}
+                <td>
+                    <div class="day-number">{{ day_data.day.day }}</div>
+                    {% if day_data.events %}
+                        <ul class="events-list">
+                        {% for event in day_data.events %}
+                            <li><a href="{% url 'event_detail' event.id %}" title="{{ event.title }}">{{ event.title|truncatechars:20 }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                </td>
+            {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

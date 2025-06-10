@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django import forms
-from .forms import PersonalDataForm, AcademicDataForm # Upewnij się, że AcademicDataForm zawiera 'interests'
+from .forms import PersonalDataForm, AcademicDataForm 
 from .models import FAQ, ContactMessage, Event
 from .forms import ContactForm, ContactAnswerForm
 from django.http import HttpResponseForbidden
@@ -20,6 +20,12 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from events.models import UserProfile, ContactMessage
 from accounts.models import OrganizerRequest
+from django.http import JsonResponse
+from django.core.serializers import serialize
+import calendar
+from datetime import date, datetime
+from calendar import HTMLCalendar
+
 
 class EventListView(ListView):
     model = Event
@@ -426,3 +432,38 @@ def delete_comment(request, comment_id):
     event_id = comment.event.id
     comment.delete()
     return redirect('event_detail', event_id)
+
+
+def custom_calendar_view(request, year=None, month=None):
+    today = date.today()
+    year = int(year) if year else today.year
+    month = int(month) if month else today.month
+    cal = calendar.Calendar(firstweekday=0)  # Monday start
+    month_days = cal.itermonthdates(year, month)
+    
+    # Pobierz wszystkie wydarzenia w tym miesiącu
+    events = Event.objects.filter(date__year=year, date__month=month)
+    # Grupuj wydarzenia po dniu
+    events_by_day = {}
+    for event in events:
+        day = event.date.date()
+        events_by_day.setdefault(day, []).append(event)
+    
+    # Dodaj wydarzenia do każdego dnia
+    month_days_with_events = []
+    for day in month_days:
+        day_events = events_by_day.get(day, [])
+        month_days_with_events.append({
+            'day': day,
+            'events': day_events
+        })
+    
+    day_names = ["Pn", "Wt", "Śr", "Cz", "Pt", "So", "Nd"]
+    context = {
+        "month_days": month_days_with_events,
+        "year": year,
+        "month": month,
+        "month_name": calendar.month_name[month],
+        "day_names": day_names,
+    }
+    return render(request, "events/custom_calendar.html", context)
