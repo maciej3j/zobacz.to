@@ -88,6 +88,14 @@
     margin-top: 5px;
 }
 
+/* Style dla grup pól formularza */
+.request-form .form-group {
+    flex: 0 0 auto !important;
+    margin-bottom: 6px !important;
+    min-height: unset !important;
+    height: auto !important;
+    padding: 0 !important;
+}
 
 /* Media Queries for Responsiveness (specyficzne dla tego formularza) */
 @media (max-width: 1024px) {
