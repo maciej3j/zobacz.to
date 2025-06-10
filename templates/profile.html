@@ -9,8 +9,7 @@
 {# Keep .no-header on main-content for the profile page #}
 <div class="main-content no-header">
   <div class="home-flex full-height">
-
-    <!-- LEWA KOLUMNA (główna część profilu) -->
+    <!-- Lewa kolumna -->
     <div class="home-left flat">
       <div class="home-left-content profile-main-content">
         <!-- Sekcja nagłówka profilu - bez avatara -->
@@ -107,10 +106,10 @@
       </footer>
     </div>
 
-    <!-- PRAWA KOLUMNA (Twoje wydarzenia) -->
+    <!-- Prawa kolumna: wszystko w jednym div -->
     <div class="home-right flat">
-      {# Ta sekcja jest zawsze widoczna dla studentów, a jej zawartość zależy od enrolled_events #}
-      {% if user.is_authenticated and is_student %}
+      {% if user.is_authenticated and user.groups.all.0.name == "student" %}
+        <!-- Twoje wydarzenia dla studenta -->
         <h2>Twoje wydarzenia</h2>
         <hr class="section-divider">
         {% if enrolled_events %}
@@ -133,9 +132,9 @@
         {% endif %}
       {% endif %}
 
-      {# Ta sekcja jest widoczna TYLKO dla organizatorów #}
-      {% if user.is_authenticated and is_organizer %}
-        <h2>Twoje utworzone wydarzenia</h2>
+      {% if is_organizer %}
+        <!-- Twoje wydarzenia dla organizatora -->
+        <h2>Twoje wydarzenia</h2>
         <hr class="section-divider">
         {% if organized_events %}
           <div class="event-list">
@@ -178,6 +177,22 @@
           <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p>
         {% endif %}
       {% endif %}
+
+      {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+        <!-- Moje akcje dla admina -->
+        <h2>Twoje akcje</h2>
+        <hr class="section-divider">
+        <div class="admin-actions-list">
+          <div class="admin-action-item">
+            <i class="fas fa-user-shield"></i>
+            <span>Prośby o organizatora: <b>{{ organizer_requests_count }}</b></span>
+          </div>
+          <div class="admin-action-item">
+            <i class="fas fa-envelope"></i>
+            <span>Wiadomości od użytkowników: <b>{{ messages_count }}</b></span>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -194,14 +209,13 @@
   </div>
 </div>
 
-
 <script>
 
 function openParticipantsModal(eventId) {
   // Poprawiona ścieżka AJAX!
   fetch(`/events/event/${eventId}/participants-ajax/`)
     .then(response => response.json())
-    .then(data => {
+    .then data => {
       document.getElementById('participants-list-content').innerHTML = data.html;
       document.getElementById('participants-modal').classList.add('active');
     });
