@@ -15,4 +15,6 @@ urlpatterns = [
     path('mark_admin_answer_seen/', views.mark_admin_answer_seen, name='mark_admin_answer_seen'),
     path('comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
     path('event/<int:event_id>/edit/', views.edit_event, name='edit_event'),
+    path("calendar/custom/", views.custom_calendar_view, name="custom-calendar"),
+    path("calendar/custom/<int:year>/<int:month>/", views.custom_calendar_view, name="custom-calendar"),
 ]
