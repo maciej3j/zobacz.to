@@ -67,8 +67,8 @@
       </div> <!-- /contact-double-flex -->
 
       <!-- Odpowiedzi od administratora na całą szerokość -->
-      {% if admin_answers and is_student or is_organizer %}
-        <div class="admin-answers-section">
+      <div id="admin-answers-section" class="admin-answers-section">
+        {% if admin_answers and is_student or is_organizer %}
           <h3 class="admin-answers-title"><span class="important-dot"></span> Odpowiedzi od administratora</h3>
           <ul class="admin-answers-list">
             {% for msg in admin_answers %}
@@ -83,8 +83,8 @@
               </li>
             {% endfor %}
           </ul>
-        </div>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
@@ -134,5 +134,11 @@ function toggleAdminAnswer(btn) {
     arrow.style.transform = 'rotate(90deg)';
   }
 }
+document.addEventListener("DOMContentLoaded", function() {
+  if(window.location.hash === "#admin-answers-section") {
+    const el = document.getElementById("admin-answers-section");
+    if(el) el.scrollIntoView({behavior: "smooth"});
+  }
+});
 </script>
 {% endblock %}

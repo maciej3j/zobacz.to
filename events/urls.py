@@ -12,4 +12,7 @@ urlpatterns = [
     path('kontakt/', views.contact, name='contact'),
     path('profile/', views.profile, name='profile'),
     path('event/<int:event_id>/participants-ajax/', views.event_participants_ajax, name='event_participants_ajax'),
+    path('mark_admin_answer_seen/', views.mark_admin_answer_seen, name='mark_admin_answer_seen'),
+    path('comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
+    path('event/<int:event_id>/edit/', views.edit_event, name='edit_event'),
 ]

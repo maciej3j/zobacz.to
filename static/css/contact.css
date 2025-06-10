@@ -376,3 +376,61 @@
   align-items: center;
   gap: 10px;
 }
+
+/* --- ADMIN MESSAGES --- */
+.admin-messages-list {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.admin-message-block {
+    background: #f6f5fb;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(88,61,156,0.06);
+    padding: 22px 18px 14px 18px;
+    margin-bottom: 0;
+    transition: box-shadow 0.2s;
+    border-left: 5px solid #583d9c;
+}
+
+.admin-message-block b {
+    color: #583d9c;
+}
+
+.admin-answer-sent {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: #eafbe7;
+    border-radius: 8px;
+    font-size: 1.05em;
+}
+
+.admin-message-block textarea {
+    border-radius: 8px;
+    border: 1.5px solid #bdbdbd;
+    padding: 8px 10px;
+    font-size: 1em;
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    resize: vertical;
+}
+
+.filter-button {
+    background: #583d9c;
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 7px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background 0.2s;
+    box-shadow: 0 2px 8px rgba(88,61,156,0.08);
+}
+.filter-button:hover {
+    background: #3b0a58;
+}
