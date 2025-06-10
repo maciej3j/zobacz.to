@@ -6,92 +6,131 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
-<div class="events-container">
-    <div class="events-card">
+<div class="main-content no-header">
+  <div class="home-flex full-height">
+    <!-- LEWA KOLUMNA: Lista wydarzeń -->
+    <div class="home-left flat">
+      <div class="home-left-content">
         <h2 class="events-title">Wszystkie wydarzenia</h2>
+        <hr class="section-divider">
 
         <form method="get" class="filter-form">
-            <div class="form-group">
-                <label for="location">Lokalizacja:</label>
-                <input type="text" name="location" value="{{ request.GET.location }}" placeholder="np. Warszawa">
-            </div>
-            <button type="submit" class="filter-button">Filtruj</button>
+          <div class="form-group">
+            <label for="location">Lokalizacja:</label>
+            <input type="text" name="location" value="{{ request.GET.location }}" placeholder="np. Warszawa">
+          </div>
+          <button type="submit" class="filter-button">Filtruj</button>
         </form>
 
         {% with request.GET.location as loc %}
-            <div class="sort-links">
-                Sortuj według: 
-                <a href="?sort=date{% if loc %}&location={{ loc }}{% endif %}">Data rosnąco</a> | 
-                <a href="?sort=date_desc{% if loc %}&location={{ loc }}{% endif %}">Data malejąco</a> | 
-                <a href="?sort=title{% if loc %}&location={{ loc }}{% endif %}">Tytuł</a>
-            </div>
+          <div class="sort-links">
+            Sortuj według: 
+            <a href="?sort=date{% if loc %}&location={{ loc }}{% endif %}">Data rosnąco</a> | 
+            <a href="?sort=date_desc{% if loc %}&location={{ loc }}{% endif %}">Data malejąco</a> | 
+            <a href="?sort=title{% if loc %}&location={{ loc }}{% endif %}">Tytuł</a>
+          </div>
         {% endwith %}
 
         {% if user.is_authenticated %}
-            {% for group in user.groups.all %}
-                {% if group.name == "organizer" %}
-                    <a href="{% url 'add_event' %}" class="add-event-button">+ Dodaj wydarzenie</a>
-                {% endif %}
-            {% endfor %}
+          {% for group in user.groups.all %}
+            {% if group.name == "organizer" %}
+              <a href="{% url 'add_event' %}" class="add-event-button">+ Dodaj wydarzenie</a>
+            {% endif %}
+          {% endfor %}
         {% endif %}
 
-        <div class="event-list-scroll" style="max-height: 65vh; overflow-y: auto;">
+        <div class="events-card">
+          <div class="event-list-scroll" style="max-height: 65vh; overflow-y: auto;">
             <ul class="event-list">
-                {% for event in events %}
-                    <li class="event-item" onclick="window.location='{% url 'event_detail' event.id %}'" style="cursor:pointer;">
-                        <h3 class="event-title">{{ event.title }}</h3>
-                        {% if event.image %}
-                            <img src="{{ event.image.url }}" alt="Zdjęcie wydarzenia"
-                                 style="width: 75%; object-fit: cover; border-radius: 10px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;">
-                        {% endif %}
-                        <p><strong>Kiedy:</strong> {{ event.date }}</p>
-                        <p><strong>Gdzie:</strong> {{ event.location }}</p>
-                        <p><strong>Opis:</strong> {{ event.description }}</p>
-                        {% if user.is_authenticated %}
-                            {% for group in user.groups.all %}
-                                {% if group.name == "admin" %}
-                                    <form method="post" action="{% url 'delete_event' event.id %}" style="display:inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to wydarzenie?');">Usuń</button>
-                                    </form>
-                                {% elif group.name == "organizer" and event.created_by == user %}
-                                    <form method="post" action="{% url 'delete_event' event.id %}" style="display:inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to wydarzenie?');">Usuń</button>
-                                    </form>
-                                {% endif %}
-                            {% endfor %}
-                            {% if user.groups.all.0.name == "student" %}
-                                {% if event.id in user_enrollments %}
-                                    <form method="post" action="{% url 'unenroll_event' event.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="unenroll-button">Zrezygnuj</button>
-                                        <span style="margin-left:8px;">Kliknij na wydarzenie żeby zobaczyć komentarze</span>
-                                    </form>
-                                {% else %}
-                                    <form method="post" action="{% url 'enroll_in_event' event.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="enroll-button">Zapisz się</button>
-                                        <span style="margin-left:8px;">Kliknij na wydarzenie żeby zobaczyć komentarze</span>
-                                    </form>
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-
-                        {% if messages %}
-                            <div class="messages">
-                                {% for message in messages %}
-                                    <div class="message {{ message.tags }}">{{ message }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </li>
-                    <hr>
-                {% empty %}
-                    <li class="event-empty">Brak wydarzeń.</li>
-                {% endfor %}
+              {% for event in events %}
+                <li class="event-item" onclick="window.location='{% url 'event_detail' event.id %}'" style="cursor:pointer;">
+                  <h3 class="event-title">{{ event.title }}</h3>
+                  {% if event.image %}
+                    <img src="{{ event.image.url }}" alt="Zdjęcie wydarzenia"
+                         style="width: 75%; object-fit: cover; border-radius: 10px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;">
+                  {% endif %}
+                  <p><strong>Kiedy:</strong> {{ event.date }}</p>
+                  <p><strong>Gdzie:</strong> {{ event.location }}</p>
+                  <p><strong>Opis:</strong> {{ event.description }}</p>
+                  {% if user.is_authenticated %}
+                    {% for group in user.groups.all %}
+                      {% if group.name == "admin" %}
+                        <form method="post" action="{% url 'delete_event' event.id %}" style="display:inline;">
+                          {% csrf_token %}
+                          <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to wydarzenie?');">Usuń</button>
+                        </form>
+                      {% elif group.name == "organizer" and event.created_by == user %}
+                        <a href="{% url 'edit_event' event.id %}" class="edit-button">Edytuj</a>
+                        <form method="post" action="{% url 'delete_event' event.id %}" style="display:inline;">
+                          {% csrf_token %}
+                          <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to wydarzenie?');">Usuń</button>
+                        </form>
+                      {% endif %}
+                    {% endfor %}
+                    {% if user.groups.all.0.name == "student" %}
+                      {% if event.id in user_enrollments %}
+                        <form method="post" action="{% url 'unenroll_event' event.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="unenroll-button">Zrezygnuj</button>
+                          <span style="margin-left:8px;">Kliknij na wydarzenie żeby zobaczyć komentarze</span>
+                        </form>
+                      {% else %}
+                        <form method="post" action="{% url 'enroll_in_event' event.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="enroll-button">Zapisz się</button>
+                          <span style="margin-left:8px;">Kliknij na wydarzenie żeby zobaczyć komentarze</span>
+                        </form>
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                  {% if messages %}
+                    <div class="messages">
+                      {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </li>
+                <hr>
+              {% empty %}
+                <li class="event-empty">Brak wydarzeń.</li>
+              {% endfor %}
             </ul>
+          </div>
         </div>
+      </div>
+      <footer class="site-footer">
+        <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
+      </footer>
     </div>
+
+    <!-- PRAWA KOLUMNA: Zapisane wydarzenia -->
+    <div class="home-right flat">
+      {% if user.is_authenticated and user.groups.all.0.name == "student" %}
+        <h2>Twoje wydarzenia</h2>
+        <hr class="section-divider">
+        {% if user_enrollments %}
+          <div class="event-list">
+            {% for event in events %}
+              {% if event.id in user_enrollments %}
+                <div class="event-card">
+                  <div class="event-info">
+                    <i class="fa-solid fa-calendar-day event-icon"></i>
+                    <div class="event-details">
+                      <strong>{{ event.title }}</strong>
+                      <span>{{ event.date }}</span>
+                    </div>
+                  </div>
+                  <span class="badge">Zapisany</span>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>Nie zapisałeś się na żadne wydarzenia.</p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock content %}

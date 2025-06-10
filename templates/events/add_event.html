@@ -8,7 +8,11 @@
 
 <div class="event-form-container">
     <div class="event-form-card">
-        <h2>Dodaj nowe wydarzenie</h2>
+        {% if edit_mode %}
+          <h2>Edytuj wydarzenie</h2>
+        {% else %}
+          <h2>Dodaj nowe wydarzenie</h2>
+        {% endif %}
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% if form.errors %}

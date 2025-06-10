@@ -10,7 +10,7 @@ from .decorators import organizer_required, admin_required
 from .decorators import student_required
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django import forms
 from .forms import PersonalDataForm, AcademicDataForm # Upewnij się, że AcademicDataForm zawiera 'interests'
 from .models import FAQ, ContactMessage, Event
@@ -18,6 +18,8 @@ from .forms import ContactForm, ContactAnswerForm
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from events.models import UserProfile
+from accounts.models import OrganizerRequest
 
 class EventListView(ListView):
     model = Event
@@ -61,6 +63,19 @@ def add_event(request):
     else:
         form = EventForm()
     return render(request, 'events/add_event.html', {'form': form})
+
+@organizer_required
+def edit_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id, created_by=request.user)
+    if request.method == 'POST':
+        form = EventForm(request.POST, request.FILES, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Wydarzenie zostało zaktualizowane!")
+            return redirect('events_list')
+    else:
+        form = EventForm(instance=event)
+    return render(request, 'events/add_event.html', {'form': form, 'edit_mode': True, 'event': event})
 
 @login_required
 def delete_event(request, event_id):
@@ -129,6 +144,7 @@ def home(request):
     is_student = False # Initialize boolean flags
     is_organizer = False
     is_admin = False # Initialize is_admin flag
+    show_admin_answer = False
 
     if request.user.is_authenticated:
         is_student = request.user.groups.filter(name='student').exists()
@@ -155,6 +171,12 @@ def home(request):
                 .order_by('date') # Added ordering for consistency
             )
 
+        # Sprawdź, czy jest nowa odpowiedź i czy nie została już "przeczytana"
+        show_admin_answer = bool(admin_answers) and (is_student or is_organizer)
+
+    organizer_requests_count = OrganizerRequest.objects.filter(is_reviewed=False).count()
+    messages_count = ContactMessage.objects.filter(answer__isnull=True).count()
+
     context = {
         'announcements': announcements,
         'admin_answers': admin_answers,
@@ -163,6 +185,9 @@ def home(request):
         'is_student': is_student, # Always pass boolean flags for template logic
         'is_organizer': is_organizer, # Always pass boolean flags for template logic
         'is_admin': is_admin, # Pass the new is_admin flag
+        "show_admin_answer": show_admin_answer,
+        "organizer_requests_count": organizer_requests_count,
+        "messages_count": messages_count,
     }
     return render(request, 'home.html', context)
 
@@ -257,13 +282,12 @@ def contact(request):
 @login_required
 def profile(request):
     user = request.user
-    # Ensure user has a profile, create one if not (or handle this in User model creation)
+
     try:
         profile = user.userprofile
     except AttributeError:
         # Handle case where user might not have a profile, e.g., create it.
         # This is a placeholder, you might have specific logic in accounts app
-        from accounts.models import UserProfile # assuming UserProfile is in accounts.models
         profile = UserProfile.objects.create(user=user)
 
     enrolled_events = [] # Initialize
@@ -279,6 +303,7 @@ def profile(request):
             if personal_form.is_valid():
                 personal_form.save()
                 messages.success(request, "Dane osobowe zostały zaktualizowane.")
+                return redirect('profile')
             else:
                 messages.error(request, "Błąd podczas aktualizacji danych osobowych.")
         
@@ -359,3 +384,19 @@ def event_participants_ajax(request, event_id):
     enrollments = EventEnrollment.objects.filter(event=event).select_related('user')
     html = render_to_string('events/participants_list_fragment.html', {'enrollments': enrollments, 'event': event}, request=request)
     return JsonResponse({'html': html})
+
+@login_required
+def mark_admin_answer_seen(request):
+    if request.method == "POST":
+        request.user.profile.admin_answer_seen = True
+        request.user.profile.save()
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "error"}, status=400)
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name="admin").exists())
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(EventComment, id=comment_id)
+    event_id = comment.event.id
+    comment.delete()
+    return redirect('event_detail', event_id)

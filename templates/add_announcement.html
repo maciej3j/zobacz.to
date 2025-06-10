@@ -1,14 +1,61 @@
 <!-- filepath: templates/add_announcement.html -->
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Dodaj ogłoszenie{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/organizer_request_form.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="main-content">
-  <h2>Dodaj ogłoszenie</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="add-event-button">Dodaj</button>
-  </form>
-  <a href="{% url 'home' %}" class="back-link">← Wróć</a>
+<div class="main-content no-header">
+  <div class="home-flex single-column-flex">
+    <div class="home-left flat">
+      <div class="home-left-content">
+        <div class="section-box">
+          <h2 class="request-sent-header">
+            <i class="fas fa-bullhorn"></i> Dodaj ogłoszenie
+          </h2>
+          <hr class="section-divider">
+
+          <form method="post" class="request-form">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+              <div class="form-errors">
+                {% for error in form.non_field_errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% for field in form %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                  <small class="help-text">{{ field.help_text }}</small>
+                {% endif %}
+                {% if field.errors %}
+                  <div class="field-errors">
+                    {% for error in field.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-primary">Dodaj ogłoszenie</button>
+          </form>
+
+          <a href="{% url 'home' %}" class="back-button">← Powrót</a>
+        </div>
+      </div>
+      <footer class="site-footer">
+        <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
+      </footer>
+    </div>
+  </div>
 </div>
 {% endblock %}

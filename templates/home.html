@@ -1,9 +1,6 @@
-<!-- filepath: templates/home.html -->
 {% extends "base.html" %}
 {% load static %}
-
 {% block title %}Zapisz to!{% endblock %}
-
 {% block content %}
 <div class="main-content no-header">
   <div class="home-flex full-height">
@@ -16,6 +13,22 @@
           <a href="{% url 'add_announcement' %}" class="add-event-button">+ Dodaj ogłoszenie</a>
         {% endif %}
         <div class="announcement-list">
+          {% if admin_answers %}
+            {% if is_student or is_organizer %}
+              <a href="{% url 'contact' %}#admin-answers-section"
+                 class="announcement-card admin-answer-announcement admin-answer-announcement--red"
+                 id="admin-answer-notification"
+                 style="text-decoration:none;">
+                <div class="announcement-icon">
+                  <i class="fa fa-envelope-open-text"></i>
+                </div>
+                <div class="announcement-text">
+                  <h3>Odpowiedź od administratora</h3>
+                  <span style="font-weight:600; color:inherit;">Zobacz odpowiedź</span>
+                </div>
+              </a>
+            {% endif %}
+          {% endif %}
           {% if announcements %}
             {% for ann in announcements %}
               <div class="announcement-card {{ ann.category }}">
@@ -39,6 +52,8 @@
             <p>Brak ogłoszeń.</p>
           {% endif %}
         </div>
+
+        
       </div>
       <footer class="site-footer">
         <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
@@ -71,7 +86,7 @@
       {% endif %}
 
       {% if organizer_events %}
-        <h2>Twoje utworzone wydarzenia</h2>
+        <h2>Twoje wydarzenia</h2>
         <hr class="section-divider">
         {% if organizer_events %}
           <div class="event-list">
@@ -114,6 +129,24 @@
           <p>Nie utworzyłeś jeszcze żadnych wydarzeń.</p>
         {% endif %}
       {% endif %}
+
+      {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
+        <div class="home-right flat">
+          <h2>Moje akcje</h2>
+          <hr class="section-divider">
+          <div class="admin-actions-list">
+            <div class="admin-action-item">
+              <i class="fas fa-user-shield"></i>
+              <span>Prośby o organizatora: <b>{{ organizer_requests_count }}</b></span>
+            </div>
+            <div class="admin-action-item">
+              <i class="fas fa-envelope"></i>
+              <span>Wiadomości od użytkowników: <b>{{ messages_count }}</b></span>
+            </div>
+            
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div> 
@@ -127,30 +160,6 @@
     <div id="participants-list-content">
       <!-- tutaj zostanie załadowana lista przez AJAX -->
     </div>
-  </div>
-</div>
-
-{% if admin_answers and is_student or is_organizer %}
-  <div class="important-announcement">
-    <span class="important-dot"></span>
-    <b>Odpowiedź od administratora!</b>
-    <a href="#" onclick="openAnswerModal(); return false;">Zobacz odpowiedź</a>
-  </div>
-{% endif %}
-
-<div id="answer-modal" class="answer-modal">
-  <div class="answer-modal-backdrop" onclick="closeAnswerModal()"></div>
-  <div class="answer-modal-content">
-    <button class="answer-modal-close" onclick="closeAnswerModal()">&times;</button>
-    <h3>Odpowiedź od administratora</h3>
-    {% for msg in admin_answers %}
-      <div class="admin-answer-block">
-        <b>Twoje pytanie:</b> {{ msg.subject }}<br>
-        <b>Treść:</b> {{ msg.message }}<br>
-        <hr>
-        <b>Odpowiedź:</b> {{ msg.answer }}
-      </div>
-    {% endfor %}
   </div>
 </div>
 
@@ -173,6 +182,21 @@ function openAnswerModal() {
 function closeAnswerModal() {
   document.getElementById('answer-modal').classList.remove('active');
 }
+document.addEventListener("DOMContentLoaded", function() {
+  const adminNotif = document.getElementById('admin-answer-notification');
+  if(adminNotif) {
+    adminNotif.addEventListener('click', function(e) {
+      e.preventDefault();
+      fetch("{% url 'mark_admin_answer_seen' %}", {
+        method: "POST",
+        headers: {'X-CSRFToken': '{{ csrf_token }}'}
+      }).then(() => {
+        adminNotif.style.display = 'none';
+        window.location.href = adminNotif.href;
+      });
+    });
+  }
+});
 </script>
 
 {% if messages %}
@@ -182,5 +206,4 @@ function closeAnswerModal() {
     {% endfor %}
   </div>
 {% endif %}
-
 {% endblock %}

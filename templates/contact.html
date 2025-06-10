@@ -5,11 +5,14 @@
 <link rel="stylesheet" href="{% static 'css/contact.css' %}">
 <div class="main-content no-header">
   <div class="home-flex full-height">
-    <!-- Lewa kolumna: Kontakt i FAQ -->
     <div class="home-left flat">
       <h2>Skontaktuj się z nami</h2>
       <p>Masz pytania, sugestie lub potrzebujesz pomocy? Jesteśmy tu dla Ciebie!</p>
-      <div class="contact-faq-flex">
+      <hr class="section-divider">
+
+      <!-- Dwa bloki obok siebie -->
+      <div class="contact-double-flex">
+        <!-- Lewy blok: Kontakt z administratorem -->
         <div class="contact-form-block">
           <h3><i class="fa fa-user"></i> Kontakt z administratorem</h3>
           <p>W sprawach technicznych, działania portalu lub ogólnych pytań skorzystaj z poniższego formularza.</p>
@@ -28,12 +31,16 @@
             <div class="form-group">
               {{ form.message.label_tag }}{{ form.message }}
             </div>
-            <button type="submit" class="filter-button"><i class="fa fa-paper-plane"></i> Wyślij wiadomość</button>
+            <button type="submit" class="filter-button">
+              <i class="fa fa-paper-plane"></i> Wyślij wiadomość
+            </button>
           </form>
         </div>
-        <div class="contact-info-faq">
+
+        <!-- Prawy blok: Info kontaktowe + FAQ -->
+        <div class="contact-info-faq-block">
           <div class="contact-info-box">
-            <h4><i class="fa fa-info-circle"></i> Informacje kontaktowe</h4>
+            <h3><i class="fa fa-info-circle"></i> Informacje kontaktowe</h3>
             <p><b>E-mail ogólny:</b> <a href="mailto:{{ contact_info.email }}">{{ contact_info.email }}</a></p>
             <p><b>Telefon (pomoc techniczna):</b> {{ contact_info.phone }}</p>
             <p><b>Adres korespondencyjny:</b><br>{{ contact_info.address }}</p>
@@ -42,39 +49,42 @@
             <h4><i class="fa fa-question-circle"></i> Najczęściej zadawane pytania (FAQ)</h4>
             <ul>
               {% for faq in faqs %}
-                <li>
-                  <b>{{ faq.question }}</b>
-                  <div>{{ faq.answer }}</div>
+                <li class="faq-item">
+                  <button class="faq-question" type="button" onclick="toggleFaqAnswer(this)">
+                    {{ faq.subject }} <span class="faq-arrow">&#8250;</span>
+                  </button>
+                  <div class="faq-answer" style="display:none;">
+                    {{ faq.answer }}
+                  </div>
                 </li>
               {% endfor %}
             </ul>
-            <a href="#" onclick="openFaqModal(); return false;">Zobacz więcej pytań &rarr;</a>
+            <a href="#" class="faq-more-link" onclick="openFaqModal(); return false;">
+              Zobacz więcej pytań <span style="font-size:1.2em;">&#8594;</span>
+            </a>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- Prawa kolumna: Nadchodzące wydarzenia -->
-    <div class="home-right flat">
-      <h2>Nadchodzące wydarzenia</h2>
-      <hr class="section-divider">
-      {% if upcoming_events %}
-        <div class="event-list">
-          {% for event in upcoming_events %}
-            <div class="event-card">
-              <div class="event-info">
-                <i class="fa-solid fa-calendar-day event-icon"></i>
-                <div class="event-details">
-                  <strong>{{ event.title }}</strong>
-                  <span>{{ event.date }}, {{ event.time }}</span>
+      </div> <!-- /contact-double-flex -->
+
+      <!-- Odpowiedzi od administratora na całą szerokość -->
+      <div id="admin-answers-section" class="admin-answers-section">
+        {% if admin_answers and is_student or is_organizer %}
+          <h3 class="admin-answers-title"><span class="important-dot"></span> Odpowiedzi od administratora</h3>
+          <ul class="admin-answers-list">
+            {% for msg in admin_answers %}
+              <li class="admin-answer-item">
+                <button class="admin-answer-question" type="button" onclick="toggleAdminAnswer(this)">
+                  {{ msg.subject }}
+                  <span class="faq-arrow">&#8250;</span>
+                </button>
+                <div class="admin-answer-content" style="display:none;">
+                  {{ msg.answer }}
                 </div>
-              </div>
-              <span class="badge">Zapisany</span>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p>Brak nadchodzących wydarzeń.</p>
-      {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
@@ -98,22 +108,6 @@
   </div>
 </div>
 
-{% if admin_answers and is_student or is_organizer %}
-  <div class="important-announcement">
-    <span class="important-dot"></span>
-    <b>Odpowiedzi od administratora:</b>
-  </div>
-  <div class="admin-answers-list">
-    {% for msg in admin_answers %}
-      <div class="admin-answer-block">
-        <b>Twoje pytanie:</b> {{ msg.subject }}<br>
-        <b>Treść:</b> {{ msg.message }}<br>
-        <hr>
-        <b>Odpowiedź:</b> {{ msg.answer }}
-      </div>
-    {% endfor %}
-  </div>
-{% endif %}
 <script>
 function openFaqModal() {
   document.getElementById('faq-modal').classList.add('active');
@@ -121,5 +115,30 @@ function openFaqModal() {
 function closeFaqModal() {
   document.getElementById('faq-modal').classList.remove('active');
 }
+function toggleAdminAnswers(btn) {
+  const answerBlock = document.getElementById('more-admin-answers');
+  const arrow = btn.querySelector('.faq-arrow');
+  const isOpen = answerBlock.style.display === 'block';
+  answerBlock.style.display = isOpen ? 'none' : 'block';
+  arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+  btn.firstChild.textContent = isOpen ? 'Pokaż wcześniejsze odpowiedzi' : 'Ukryj wcześniejsze odpowiedzi';
+}
+function toggleAdminAnswer(btn) {
+  const answer = btn.nextElementSibling;
+  const arrow = btn.querySelector('.faq-arrow');
+  if (answer.style.display === 'block') {
+    answer.style.display = 'none';
+    arrow.style.transform = 'rotate(0deg)';
+  } else {
+    answer.style.display = 'block';
+    arrow.style.transform = 'rotate(90deg)';
+  }
+}
+document.addEventListener("DOMContentLoaded", function() {
+  if(window.location.hash === "#admin-answers-section") {
+    const el = document.getElementById("admin-answers-section");
+    if(el) el.scrollIntoView({behavior: "smooth"});
+  }
+});
 </script>
 {% endblock %}
