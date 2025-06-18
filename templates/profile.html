@@ -215,7 +215,7 @@ function openParticipantsModal(eventId) {
   // Poprawiona ścieżka AJAX!
   fetch(`/events/event/${eventId}/participants-ajax/`)
     .then(response => response.json())
-    .then data => {
+    .then (data => {
       document.getElementById('participants-list-content').innerHTML = data.html;
       document.getElementById('participants-modal').classList.add('active');
     });
