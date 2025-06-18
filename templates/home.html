@@ -51,17 +51,15 @@
             <p>Brak ogłoszeń.</p>
           {% endif %}
         </div>
-
-        
       </div>
       <footer class="site-footer">
         <span>&copy; 2025 zobacz.to - Wirtualny Przewodnik Studencki. Wszelkie prawa zastrzeżone.</span>
       </footer>
     </div>
 
-    <!-- PRAWA KOLUMNA (Twoje wydarzenia) -->
+    <!-- PRAWA KOLUMNA: wszystko w jednym div -->
     <div class="home-right flat">
-      {% if user.is_authenticated and user.groups.all.0.name == "student" %}
+      {% if user.is_authenticated and is_student %}
         <h2>Twoje wydarzenia</h2>
         <hr class="section-divider">
         {% if enrolled_events %}
@@ -84,7 +82,7 @@
         {% endif %}
       {% endif %}
 
-      {% if organizer_events %}
+      {% if is_organizer %}
         <h2>Twoje wydarzenia</h2>
         <hr class="section-divider">
         {% if organizer_events %}
@@ -129,19 +127,17 @@
         {% endif %}
       {% endif %}
 
-      {% if user.is_authenticated and user.groups.all.0.name == "admin" %}
-        <div class="home-right flat">
-          <h2>Moje akcje</h2>
-          <hr class="section-divider">
-          <div class="admin-actions-list">
-            <div class="admin-action-item">
-              <i class="fas fa-user-shield"></i>
-              <span>Prośby o organizatora: <b>{{ organizer_requests_count }}</b></span>
-            </div>
-            <div class="admin-action-item">
-              <i class="fas fa-envelope"></i>
-              <span>Wiadomości od użytkowników: <b>{{ messages_count }}</b></span>
-            </div>
+      {% if user.is_authenticated and is_admin %}
+        <h2>Twoje akcje</h2>
+        <hr class="section-divider">
+        <div class="admin-actions-list">
+          <div class="admin-action-item">
+            <i class="fas fa-user-shield"></i>
+            <span>Prośby o organizatora: <b>{{ organizer_requests_count }}</b></span>
+          </div>
+          <div class="admin-action-item">
+            <i class="fas fa-envelope"></i>
+            <span>Wiadomości od użytkowników: <b>{{ messages_count }}</b></span>
           </div>
         </div>
       {% endif %}
@@ -197,11 +193,5 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-{% if messages %}
-  <div class="messages">
-    {% for message in messages %}
-      <div class="message {{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-  </div>
-{% endif %}
+
 {% endblock %}

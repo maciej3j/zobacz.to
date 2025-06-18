@@ -364,3 +364,37 @@ body {
 .event-card:hover {
   box-shadow: 0 4px 16px rgba(30,94,208,0.15);
 }
+
+/* Nowe style dla kafelków akcji admina */
+.admin-actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.admin-action-item {
+    display: flex;
+    align-items: center;
+    background: #f5f2ff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(88,61,156,0.06);
+    padding: 18px 22px;
+    font-size: 1.12em;
+    font-weight: 500;
+    color: #3a2c6b;
+    transition: box-shadow 0.2s, background 0.2s;
+}
+
+.admin-action-item i {
+    font-size: 1.5em;
+    margin-right: 16px;
+    color: #7c4dff;
+}
+
+.admin-action-item b {
+    color: #388e3c;
+    font-weight: 700;
+    margin-left: 6px;
+    font-size: 1.1em;
+}

@@ -59,11 +59,13 @@
                         <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to wydarzenie?');">Usuń</button>
                       </form>
                     {% elif group.name == "organizer" and event.created_by == user %}
-                      <a href="{% url 'edit_event' event.id %}" class="edit-button">Edytuj</a>
-                      <form method="post" action="{% url 'delete_event' event.id %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to wydarzenie?');">Usuń</button>
-                      </form>
+                       <div class="event-actions">
+                          <form method="post" action="{% url 'delete_event' event.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-button" onclick="return confirm('Czy na pewno chcesz usunąć to wydarzenie?');">Usuń</button>
+                          </form>
+                          <a href="{% url 'edit_event' event.id %}" class="edit-button">Edytuj</a>
+                        </div>
                     {% endif %}
                   {% endfor %}
                   {% if user.groups.all.0.name == "student" %}
