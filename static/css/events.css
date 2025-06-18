@@ -125,59 +125,62 @@
     color: #1e5ed0;
 }
 
-/*przycisk BUTTON przekierowujący do strony z dodawaniem wydarzeń*/
+/* Pastelowy zielony, krótszy przycisk Dodaj wydarzenie */
 .add-event-button {
     display: inline-block;
     margin-bottom: 20px;
-    padding: 10px 20px;
-    background-color: #28a745;
-    color: white;
+    padding: 8px 18px;
+    background-color: #81c784; /* pastelowy zielony */
+    color: #fff;
     font-weight: bold;
     text-decoration: none;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+    min-width: 0;
+    width: auto;
 }
 
 .add-event-button:hover {
-    background-color: #218838;
-}
-
-.delete-button {
-    background: #583d9c;
-    color: #fff;
-    border: none;
-    border-radius: 18px;
-    padding: 7px 20px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-left: 10px;
-    transition: background 0.2s;
-    box-shadow: 0 2px 8px rgba(88,61,156,0.08);
-}
-
-.delete-button:hover {
-    background: #3b0a58;
+    background-color: #66bb6a;
 }
 
 .edit-button {
-    background: #ffc107;
-    color: #333;
+    display: inline-block;
+    background: #66bb6a;
+    color: #fff;
     border: none;
     border-radius: 18px;
-    padding: 7px 20px;
+    padding: 7px 16px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    margin-left: 10px;
-    margin-right: 5px;
     text-decoration: none;
-    transition: background 0.2s;
-    box-shadow: 0 2px 8px rgba(255,193,7,0.08);
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 2px 8px rgba(102,187,106,0.10);
 }
 
 .edit-button:hover {
-    background: #e0a800;
+    background: #388e3c;
+    color: #fff;
+}
+
+.delete-button {
+    background: #ffb3b3; 
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 7px 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 2px 8px rgba(255,179,179,0.10);
+}
+
+.delete-button:hover {
+    background: #e57373;
     color: #fff;
 }
 
