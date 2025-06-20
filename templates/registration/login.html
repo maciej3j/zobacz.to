@@ -1,6 +1,6 @@
 
 {% load static %}
-{% block title %}Zaloguj się lub zarejestruj | zobacz.to{% endblock %}
+
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/login.css' %}">
 <div class="login-container">
@@ -8,7 +8,7 @@
       <div class="logo-image">
         <img src="{% static 'images/logo.jpeg' %}" alt="Logo">
     </div>
-        <h2 class="login-title">Logowanie do Zapiszto</h2>
+        <h2 class="login-title">Logowanie do zobacz.to</h2>
         
         <form method="post">
             {% csrf_token %}

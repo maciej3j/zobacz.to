@@ -7,7 +7,7 @@ class OrganizerRequest(models.Model):
     last_name = models.CharField("Nazwisko", max_length=100)
     email = models.EmailField()
     university = models.CharField("Uczelnia", max_length=200)
-    field_of_study = models.CharField("Rok studiów", max_length=200)
+    
     is_reviewed = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

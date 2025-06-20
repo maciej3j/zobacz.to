@@ -32,8 +32,9 @@
 }
 .contact-info-faq-block {
   flex: 1 1 320px;
-  min-width: 320px;
-  max-width: 520px;
+  min-width: 340px;
+  width: 370px;
+  max-width: 620px;
   display: flex;
   flex-direction: column;
   gap: 12px; /* było 24px */
@@ -64,6 +65,7 @@
 .contact-form-block .form-group {
   display: flex;
   flex-direction: column;
+  margin-bottom: 18px !important;
 }
 .contact-form-block label {
   font-weight: 600;
@@ -433,4 +435,8 @@
 }
 .filter-button:hover {
     background: #3b0a58;
+}
+
+.home-left.flat {
+    margin-top: 10px !important;
 }

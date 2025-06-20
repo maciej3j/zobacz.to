@@ -31,4 +31,4 @@ class CustomUserCreationForm(UserCreationForm):
 class OrganizerRequestForm(forms.ModelForm):
     class Meta:
         model = OrganizerRequest
-        fields = ['first_name', 'last_name', 'email', 'university', 'field_of_study']
+        fields = ['first_name', 'last_name', 'email', 'university']
